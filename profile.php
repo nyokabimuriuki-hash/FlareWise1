@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// If user is not logged in, redirect to login page
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.html');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,21 +21,21 @@
 		<div class="nav-container">
 			<div class="nav-brand">FlareWise</div>
 			<div class="nav-links">
-				<a href="dashboard.php">🏠 Dashboard</a>
-				<a href="symptoms.php">🩹 Symptoms</a>
-				<a href="medication.php">💊 Medication</a>
-				<a href="upload.php">📷 Images</a>
-				<a href="profile.php">👤 Profile</a>
-				<a href="about.php">ℹ️ About Us</a>
+				<a href="dashboard.php">Dashboard</a>
+				<a href="symptoms.php">Symptoms</a>
+				<a href="medication.php">Medication</a>
+				<a href="upload.php">Images</a>
+				<a href="profile.php" class="active">Profile</a>
+				<a href="about.php">About Us</a>
 			</div>
 			<div class="nav-auth">
-				<a id="signout-link" class="signout-btn">🚪 Sign Out</a>
+				<a id="signout-link" class="signout-btn">Sign Out</a>
 			</div>
 		</div>
 	</nav>
 
 	<div class="main">
-		<h1>👤 Your Profile</h1>
+		<h1>Your Profile</h1>
 
 		<div class="card">
 			<h2>Account Information</h2>
@@ -53,7 +62,7 @@
 		<hr>
 
 		<div class="card">
-			<h2>⚙️ Account Settings</h2>
+			<h2>Account Settings</h2>
 			<p style="color: #666; margin-bottom: 20px;">Your account is securely connected to Firebase Authentication.</p>
 			<p style="color: #999; font-size: 14px;">For account security and password changes, please use your email provider's account settings.</p>
 		</div>
@@ -79,8 +88,10 @@
 
 		document.getElementById('signout-link').addEventListener('click', async (e) => {
 			e.preventDefault();
+			// First, destroy the PHP session, then sign out from Firebase for consistency.
+			await fetch('logout_session.php');
 			await auth.signOut();
-			window.location = 'login.html';
+			window.location.href = 'index.php';
 		});
 	</script>
 

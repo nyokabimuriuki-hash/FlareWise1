@@ -3,22 +3,21 @@
 session_start();
 require_once 'db_connect.php';
 
-$user=$_SESSION['user_id'] ?? null;
+// If user is not logged in, redirect to login page
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.html');
+    exit;
+}
+$user_id = $_SESSION['user_id'];
 
-if(isset($_POST['save']))
-{
-	if(!$user) {
-		header('Location: login.html');
-		exit;
-	}
-	
+if (isset($_POST['save'])) {
 	$name=$_POST['medicine'];
 	$dosage=$_POST['dosage'];
 	$time=$_POST['time'];
 
 	// Use prepared statements to prevent SQL injection
 	$stmt = $conn->prepare("INSERT INTO medications(user_id, medicine_name, dosage, reminder_time) VALUES (?, ?, ?, ?)");
-	$stmt->bind_param("isss", $user, $name, $dosage, $time);
+	$stmt->bind_param("isss", $user_id, $name, $dosage, $time);
 	$stmt->execute();
 	$stmt->close();
 }
@@ -39,21 +38,21 @@ if(isset($_POST['save']))
 		<div class="nav-container">
 			<div class="nav-brand">FlareWise</div>
 			<div class="nav-links">
-				<a href="dashboard.php">🏠 Dashboard</a>
-				<a href="symptoms.php">🩹 Symptoms</a>
-				<a href="medication.php">💊 Medication</a>
-				<a href="upload.php">📷 Images</a>
-				<a href="profile.php">👤 Profile</a>
-				<a href="about.php">ℹ️ About Us</a>
+				<a href="dashboard.php">Dashboard</a>
+				<a href="symptoms.php">Symptoms</a>
+				<a href="medication.php" class="active">Medication</a>
+				<a href="upload.php">Images</a>
+				<a href="profile.php">Profile</a>
+				<a href="about.php">About Us</a>
 			</div>
 			<div class="nav-auth">
-				<a id="signout-link" class="signout-btn">🚪 Sign Out</a>
+				<a id="signout-link" class="signout-btn">Sign Out</a>
 			</div>
 		</div>
 	</nav>
 
 	<div class="main">
-		<h1>💊 Medication Reminders</h1>
+		<h1>Medication Reminders</h1>
     
 		<div class="card">
 			<h2>Add New Medication</h2>
@@ -86,21 +85,19 @@ if(isset($_POST['save']))
 				</thead>
 				<tbody>
 					<?php
-					if($user) {
-						// Use prepared statements for selecting data
-						$stmt = $conn->prepare("SELECT medicine_name, dosage, reminder_time FROM medications WHERE user_id = ? ORDER BY reminder_time ASC");
-						$stmt->bind_param("i", $user);
-						$stmt->execute();
-						$result = $stmt->get_result();
+					// Use prepared statements for selecting data
+					$stmt = $conn->prepare("SELECT medicine_name, dosage, reminder_time FROM medications WHERE user_id = ? ORDER BY reminder_time ASC");
+					$stmt->bind_param("i", $user_id);
+					$stmt->execute();
+					$result = $stmt->get_result();
 
-						while($row = $result->fetch_assoc())
-						{
-							echo "<tr>
-								<td><strong>".htmlspecialchars($row['medicine_name'])."</strong></td>
-								<td>".htmlspecialchars($row['dosage'])."</td>
-								<td>⏰ ".htmlspecialchars($row['reminder_time'])."</td>
-							</tr>";
-						}
+					while($row = $result->fetch_assoc())
+					{
+						echo "<tr>
+							<td><strong>".htmlspecialchars($row['medicine_name'])."</strong></td>
+							<td>".htmlspecialchars($row['dosage'])."</td>
+							<td>".htmlspecialchars(date("g:i A", strtotime($row['reminder_time'])))."</td>
+						</tr>";
 					}
 					?>
 				</tbody>
@@ -126,8 +123,10 @@ if(isset($_POST['save']))
 		// Sign out handler
 		document.getElementById('signout-link').addEventListener('click', async (e) => {
 			e.preventDefault();
+			await fetch('logout_session.php');
 			await auth.signOut();
-			window.location = 'login.html';
+			// Redirect to main page, not login, as index.php handles routing
+			window.location.href = 'index.php';
 		});
 	</script>
 

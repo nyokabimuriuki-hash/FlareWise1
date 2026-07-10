@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// If a user is already logged in (has a PHP session), redirect them straight to the dashboard.
+if (isset($_SESSION['user_id'])) {
+    header('Location: dashboard.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,9 +22,10 @@
 		}
 
 		body {
-			background: linear-gradient(135deg, #ffffff 0%, #e0f7ff 50%, #b3e5fc 100%);
+			background: linear-gradient(135deg, #f0f4f8 0%, #e0eafc 100%);
 			min-height: 100vh;
 			overflow-x: hidden;
+			color: #333;
 		}
 
 		/* Navigation */
@@ -25,9 +35,9 @@
 			left: 0;
 			right: 0;
 			height: 80px;
-			background: rgba(255, 255, 255, 0.7);
-			backdrop-filter: blur(20px);
-			border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+			background: rgba(255, 255, 255, 0.6);
+			backdrop-filter: blur(10px);
+			border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 			z-index: 1000;
 			display: flex;
 			align-items: center;
@@ -38,7 +48,7 @@
 		.nav-brand {
 			font-size: 28px;
 			font-weight: 800;
-			background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+			background: linear-gradient(135deg, #0077B6 0%, #005A8D 100%);
 			-webkit-background-clip: text;
 			-webkit-text-fill-color: transparent;
 			background-clip: text;
@@ -63,26 +73,26 @@
 		}
 
 		.signin-btn {
-			background: rgba(2, 119, 189, 0.1);
-			color: #01579b;
-			border: 1.5px solid rgba(2, 119, 189, 0.3);
+			background: transparent;
+			color: #005A8D;
+			border: 1.5px solid #0077B6;
 		}
 
 		.signin-btn:hover {
-			background: rgba(2, 119, 189, 0.2);
-			border-color: rgba(2, 119, 189, 0.6);
+			background: rgba(0, 119, 182, 0.1);
+			border-color: #005A8D;
 		}
 
 		.signup-btn {
-			background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%);
+			background: linear-gradient(135deg, #0077B6 0%, #005A8D 100%);
 			color: white;
-			box-shadow: 0 4px 18px rgba(2, 136, 209, 0.3);
+			box-shadow: 0 4px 15px rgba(0, 90, 141, 0.2);
 			border: none;
 		}
 
 		.signup-btn:hover {
-			background: linear-gradient(135deg, #01579b 0%, #004d7a 100%);
-			box-shadow: 0 6px 24px rgba(1, 87, 155, 0.35);
+			background: linear-gradient(135deg, #005A8D 0%, #004366 100%);
+			box-shadow: 0 6px 20px rgba(0, 90, 141, 0.3);
 			transform: translateY(-2px);
 		}
 
@@ -133,14 +143,14 @@
 		.hero h1 {
 			font-size: 56px;
 			font-weight: 800;
-			color: #01579b;
+			color: #003366;
 			margin-bottom: 20px;
 			line-height: 1.2;
 			letter-spacing: -1px;
 		}
 
 		.hero-subtitle {
-			font-size: 18px;
+			font-size: 19px;
 			color: #555;
 			margin-bottom: 30px;
 			line-height: 1.8;
@@ -156,48 +166,39 @@
 		.feature-item {
 			display: flex;
 			align-items: center;
-			gap: 15px;
-			padding: 16px;
-			background: rgba(255, 255, 255, 0.6);
-			backdrop-filter: blur(15px);
-			border: 1px solid rgba(255, 255, 255, 0.5);
+			gap: 20px;
+			padding: 18px;
+			background: rgba(255, 255, 255, 0.5);
+			backdrop-filter: blur(10px);
+			border: 1px solid rgba(255, 255, 255, 0.3);
 			border-radius: 12px;
 			transition: all 0.3s ease;
+			position: relative;
 		}
 
 		.feature-item:hover {
 			background: rgba(255, 255, 255, 0.8);
 			transform: translateX(8px);
-		}
-
-		.feature-icon {
-			font-size: 28px;
-			width: 50px;
-			height: 50px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%);
-			color: white;
-			border-radius: 12px;
-			flex-shrink: 0;
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
 		}
 
 		.feature-text h3 {
-			color: #01579b;
+			color: #005A8D;
 			font-size: 16px;
 			margin-bottom: 5px;
+			font-weight: 600;
 		}
 
 		.feature-text p {
-			color: #666;
+			color: #444;
 			font-size: 14px;
+			line-height: 1.5;
 		}
 
 		.cta-button {
 			display: inline-block;
 			padding: 16px 40px;
-			background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%);
+			background: linear-gradient(135deg, #0077B6 0%, #005A8D 100%);
 			color: white;
 			text-decoration: none;
 			border-radius: 20px;
@@ -210,8 +211,8 @@
 		}
 
 		.cta-button:hover {
-			background: linear-gradient(135deg, #01579b 0%, #004d7a 100%);
-			box-shadow: 0 6px 28px rgba(1, 87, 155, 0.4);
+			background: linear-gradient(135deg, #005A8D 0%, #004366 100%);
+			box-shadow: 0 6px 25px rgba(0, 90, 141, 0.35);
 			transform: translateY(-2px);
 		}
 
@@ -235,32 +236,35 @@
 		.illustration-bg {
 			width: 100%;
 			height: 500px;
-			background: radial-gradient(circle at 30% 30%, rgba(2, 119, 189, 0.15), transparent 70%);
+			background: rgba(255, 255, 255, 0.2);
 			border-radius: 30px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			overflow: hidden;
 			position: relative;
-			backdrop-filter: blur(10px);
+			backdrop-filter: blur(5px);
 			border: 1px solid rgba(255, 255, 255, 0.3);
 		}
 
-		.illustration-content {
-			font-size: 120px;
-			text-align: center;
-			animation: pulse 2s ease-in-out infinite;
+		.illustration-bg::after {
+			content: '';
+			position: absolute;
+			width: 600px;
+			height: 600px;
+			background: radial-gradient(circle, rgba(0, 119, 182, 0.2) 0%, rgba(0, 119, 182, 0) 60%);
+			top: 50%;
+			left: 50%;
+			animation: pulse 4s ease-in-out infinite;
 		}
 
 		@keyframes pulse {
-			0%, 100% {
-				opacity: 0.8;
-				transform: scale(1);
-			}
+			0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.7; }
 			50% {
+				transform: translate(-50%, -50%) scale(1.1);
 				opacity: 1;
-				transform: scale(1.05);
 			}
+			100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.7; }
 		}
 
 		/* Footer */
@@ -273,14 +277,14 @@
 		}
 
 		footer a {
-			color: #0277bd;
+			color: #0077B6;
 			text-decoration: none;
 			margin: 0 10px;
 			transition: color 0.3s ease;
 		}
 
 		footer a:hover {
-			color: #01579b;
+			color: #005A8D;
 		}
 
 		/* Responsive */
@@ -340,10 +344,6 @@
 			.illustration-bg {
 				height: 350px;
 			}
-
-			.illustration-content {
-				font-size: 80px;
-			}
 		}
 	</style>
 </head>
@@ -359,53 +359,46 @@
 
 	<div class="hero">
 		<div class="hero-content">
-			<h1>Take Control of Your Skin Health</h1>
+			<h1>Clarity and Control For Your Health Journey</h1>
 			
 			<p class="hero-subtitle">
-				FlareWise is your comprehensive companion for managing skin conditions and autoimmune diseases. Track symptoms, manage medications, and monitor your progress with confidence.
+				FlareWise is a private, personal companion for managing chronic skin and autoimmune conditions. Gain deeper insights by tracking symptoms, medications, and visual progress in one secure place.
 			</p>
 
 			<div class="hero-features">
 				<div class="feature-item">
-					<div class="feature-icon">📊</div>
 					<div class="feature-text">
-						<h3>Track Symptoms</h3>
-						<p>Log and monitor daily symptoms to identify patterns</p>
+						<h3>Symptom Analysis</h3>
+						<p>Log daily data to uncover trends and potential triggers.</p>
 					</div>
 				</div>
 
 				<div class="feature-item">
-					<div class="feature-icon">💊</div>
 					<div class="feature-text">
-						<h3>Manage Medications</h3>
-						<p>Keep track of dosages and reminder times</p>
+						<h3>Medication Log</h3>
+						<p>Organize your treatment schedule with simple reminders.</p>
 					</div>
 				</div>
 
 				<div class="feature-item">
-					
 					<div class="feature-text">
-						<h3>Document Progress</h3>
-						<p>Capture and compare skin health over time</p>
+						<h3>Visual Timeline</h3>
+						<p>Privately document your skin's journey with a photo gallery.</p>
 					</div>
 				</div>
 
 				<div class="feature-item">
-				
 					<div class="feature-text">
 						<h3>Secure & Private</h3>
-						<p>Your data is protected with enterprise-grade security</p>
+						<p>Your personal health data is encrypted and protected.</p>
 					</div>
 				</div>
 			</div>
-
-			<a href="register.html" class="cta-button">Get Started Now</a>
+			<a href="register.html" class="cta-button">Create Your Account</a>
 		</div>
 
 		<div class="hero-visual">
-			<div class="illustration-bg">
-				<div class="illustration-content">💙</div>
-			</div>
+			<div class="illustration-bg"></div>
 		</div>
 	</div>
 

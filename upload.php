@@ -3,15 +3,14 @@
 session_start();
 require_once 'db_connect.php';
 
-$user=$_SESSION['user_id'] ?? null;
+// If user is not logged in, redirect to login page
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.html');
+    exit;
+}
+$user_id = $_SESSION['user_id'];
 
-if(isset($_POST['upload']))
-{
-	if(!$user) {
-		header('Location: login.html');
-		exit;
-	}
-	
+if (isset($_POST['upload'])) {
 	if(!is_dir("uploads")) {
 		mkdir("uploads", 0755, true);
 	}
@@ -24,7 +23,7 @@ if(isset($_POST['upload']))
 		move_uploaded_file($temp,"uploads/".$image_new);
 
 		$stmt = $conn->prepare("INSERT INTO skin_images(user_id, image_name) VALUES (?, ?)");
-		$stmt->bind_param("is", $user, $image_new);
+		$stmt->bind_param("is", $user_id, $image_new);
 		$stmt->execute();
 		$stmt->close();
 	}
@@ -46,21 +45,21 @@ if(isset($_POST['upload']))
 		<div class="nav-container">
 			<div class="nav-brand">FlareWise</div>
 			<div class="nav-links">
-				<a href="dashboard.php">🏠 Dashboard</a>
-				<a href="symptoms.php">🩹 Symptoms</a>
-				<a href="medication.php">💊 Medication</a>
-				<a href="upload.php">📷 Images</a>
-				<a href="profile.php">👤 Profile</a>
-				<a href="about.php">ℹ️ About Us</a>
+				<a href="dashboard.php">Dashboard</a>
+				<a href="symptoms.php">Symptoms</a>
+				<a href="medication.php">Medication</a>
+				<a href="upload.php" class="active">Images</a>
+				<a href="profile.php">Profile</a>
+				<a href="about.php">About Us</a>
 			</div>
 			<div class="nav-auth">
-				<a id="signout-link" class="signout-btn">🚪 Sign Out</a>
+				<a id="signout-link" class="signout-btn">Sign Out</a>
 			</div>
 		</div>
 	</nav>
 
 	<div class="main">
-		<h1>📷 Skin Images</h1>
+		<h1>Skin Images</h1>
     
 		<div class="card">
 			<h2>Upload Skin Image</h2>
@@ -74,23 +73,21 @@ if(isset($_POST['upload']))
     
 		<hr>
 
-		<h2 class="section-title">🖼️ Your Image Gallery</h2>
+		<h2 class="section-title">Your Image Gallery</h2>
 
 		<div class="recent">
 			<div class="image-gallery">
 				<?php
-				if($user) {
-					$stmt = $conn->prepare("SELECT image_name FROM skin_images WHERE user_id = ? ORDER BY image_id DESC");
-					$stmt->bind_param("i", $user);
-					$stmt->execute();
-					$result = $stmt->get_result();
+				$stmt = $conn->prepare("SELECT image_name FROM skin_images WHERE user_id = ? ORDER BY image_id DESC");
+				$stmt->bind_param("i", $user_id);
+				$stmt->execute();
+				$result = $stmt->get_result();
 
-					while($row = $result->fetch_assoc())
-					{
-						?>
-						<img src="uploads/<?php echo htmlspecialchars($row['image_name']);?>" alt="Skin image">
-						<?php
-					}
+				while($row = $result->fetch_assoc())
+				{
+					?>
+					<img src="uploads/<?php echo htmlspecialchars($row['image_name']);?>" alt="Skin image">
+					<?php
 				}
 				?>
 			</div>
@@ -115,8 +112,10 @@ if(isset($_POST['upload']))
 		// Sign out handler
 		document.getElementById('signout-link').addEventListener('click', async (e) => {
 			e.preventDefault();
+			await fetch('logout_session.php');
 			await auth.signOut();
-			window.location = 'login.html';
+			// Redirect to main page, not login, as index.php handles routing
+			window.location.href = 'index.php';
 		});
 	</script>
 
