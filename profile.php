@@ -8,43 +8,79 @@
 </head>
 <body>
 
-	<div class="sidebar">
-		<h2>FlareWise</h2>
-		<nav>
-			<a href="dashboard.php">🏠 Dashboard</a>
-			<a href="symptoms.php">🩹 Symptoms</a>
-			<a href="medication.php">💊 Medication</a>
-			<a href="upload.php">📷 Images</a>
-			<a href="profile.php">👤 Profile</a>
-			<a id="signout-link" href="#">🚪 Sign Out</a>
-		</nav>
-	</div>
+	<nav>
+		<div class="nav-container">
+			<div class="nav-brand">FlareWise</div>
+			<div class="nav-links">
+				<a href="dashboard.php">🏠 Dashboard</a>
+				<a href="symptoms.php">🩹 Symptoms</a>
+				<a href="medication.php">💊 Medication</a>
+				<a href="upload.php">📷 Images</a>
+				<a href="profile.php">👤 Profile</a>
+				<a href="about.php">ℹ️ About Us</a>
+			</div>
+			<div class="nav-auth">
+				<a id="signout-link" class="signout-btn">🚪 Sign Out</a>
+			</div>
+		</div>
+	</nav>
 
 	<div class="main">
-		<h1>User Profile</h1>
+		<h1>👤 Your Profile</h1>
 
 		<div class="card">
 			<h2>Account Information</h2>
-			<p><strong>Name:</strong> <span id="profile-name">-</span></p>
-			<p><strong>Email:</strong> <span id="profile-email">-</span></p>
+			<div style="line-height: 2; font-size: 16px;">
+				<p>
+					<strong style="color: #0277bd;">Full Name:</strong> 
+					<span id="profile-name" style="color: #01579b; font-weight: 500;">-</span>
+				</p>
+				<p>
+					<strong style="color: #0277bd;">Email Address:</strong> 
+					<span id="profile-email" style="color: #01579b; font-weight: 500;">-</span>
+				</p>
+				<p>
+					<strong style="color: #0277bd;">Member Since:</strong> 
+					<span id="profile-created" style="color: #01579b; font-weight: 500;">Today</span>
+				</p>
+				<p>
+					<strong style="color: #0277bd;">Account Status:</strong> 
+					<span style="color: #4caf50; font-weight: 500;">✓ Active</span>
+				</p>
+			</div>
+		</div>
+
+		<hr>
+
+		<div class="card">
+			<h2>⚙️ Account Settings</h2>
+			<p style="color: #666; margin-bottom: 20px;">Your account is securely connected to Firebase Authentication.</p>
+			<p style="color: #999; font-size: 14px;">For account security and password changes, please use your email provider's account settings.</p>
 		</div>
 	</div>
 
+	<!-- Firebase SDKs (compat) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 	<script src="firebase-config.js"></script>
 	<script>
 		const auth = firebase.auth();
 		auth.onAuthStateChanged(user => {
-			if (!user) return window.location = 'login.html';
-			document.getElementById('profile-name').textContent = user.displayName || '-';
+			if (!user) {
+				window.location = 'login.html';
+				return;
+			}
+			document.getElementById('profile-name').textContent = user.displayName || 'Not Set';
 			document.getElementById('profile-email').textContent = user.email || '-';
+			
+			const createdDate = new Date(user.metadata.creationTime);
+			document.getElementById('profile-created').textContent = createdDate.toLocaleDateString();
 		});
 
 		document.getElementById('signout-link').addEventListener('click', async (e) => {
 			e.preventDefault();
 			await auth.signOut();
-			window.location = 'logout.php';
+			window.location = 'login.html';
 		});
 	</script>
 

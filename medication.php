@@ -1,23 +1,26 @@
 <?php
 
 session_start();
+require_once 'db_connect.php';
 
-include("database.php");
-
-$user=$_SESSION['user_id'];
+$user=$_SESSION['user_id'] ?? null;
 
 if(isset($_POST['save']))
 {
+	if(!$user) {
+		header('Location: login.html');
+		exit;
+	}
+	
+	$name=$_POST['medicine'];
+	$dosage=$_POST['dosage'];
+	$time=$_POST['time'];
 
-$name=$_POST['medicine'];
-$dosage=$_POST['dosage'];
-$time=$_POST['time'];
-
-$sql="INSERT INTO medications(user_id,medicine_name,dosage,reminder_time)
-VALUES('$user','$name','$dosage','$time')";
-
-mysqli_query($conn,$sql);
-
+	// Use prepared statements to prevent SQL injection
+	$stmt = $conn->prepare("INSERT INTO medications(user_id, medicine_name, dosage, reminder_time) VALUES (?, ?, ?, ?)");
+	$stmt->bind_param("isss", $user, $name, $dosage, $time);
+	$stmt->execute();
+	$stmt->close();
 }
 
 ?>
@@ -32,74 +35,101 @@ mysqli_query($conn,$sql);
 </head>
 <body>
 
-	<div class="sidebar">
-		<h2>FlareWise</h2>
-		<nav>
-			<a href="dashboard.php">🏠 Dashboard</a>
-			<a href="symptoms.php">🩹 Symptoms</a>
-			<a href="medication.php">💊 Medication</a>
-			<a href="upload.php">📷 Images</a>
-			<a href="profile.php">👤 Profile</a>
-			<a href="logout.php">🚪 Logout</a>
-		</nav>
-	</div>
+	<nav>
+		<div class="nav-container">
+			<div class="nav-brand">FlareWise</div>
+			<div class="nav-links">
+				<a href="dashboard.php">🏠 Dashboard</a>
+				<a href="symptoms.php">🩹 Symptoms</a>
+				<a href="medication.php">💊 Medication</a>
+				<a href="upload.php">📷 Images</a>
+				<a href="profile.php">👤 Profile</a>
+				<a href="about.php">ℹ️ About Us</a>
+			</div>
+			<div class="nav-auth">
+				<a id="signout-link" class="signout-btn">🚪 Sign Out</a>
+			</div>
+		</div>
+	</nav>
 
-<div class="main">
-		<h1>Medication Reminders</h1>
+	<div class="main">
+		<h1>💊 Medication Reminders</h1>
     
 		<div class="card">
-			<h2>Add Medication</h2>
+			<h2>Add New Medication</h2>
 			<form method="POST">
-				<input type="text" name="medicine" placeholder="Medicine Name" required>
-				<input type="text" name="dosage" placeholder="Dosage (e.g., 2 tablets)" required>
+				<label>Medicine Name</label>
+				<input type="text" name="medicine" placeholder="e.g., Hydrocortisone Cream" required>
+        
+				<label>Dosage</label>
+				<input type="text" name="dosage" placeholder="e.g., 2 tablets, 1 application" required>
+        
 				<label>Reminder Time</label>
 				<input type="time" name="time" required>
-				<input type="submit" name="save" value="Save Medication">
+        
+				<input type="submit" name="save" value="Add Medication">
 			</form>
 		</div>
 
-<hr>
+		<hr>
 
-<table>
+		<h2 class="section-title">📋 Your Medications</h2>
 
-<tr>
+		<div class="recent">
+			<table>
+				<thead>
+					<tr>
+						<th>Medicine Name</th>
+						<th>Dosage</th>
+						<th>Reminder Time</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					if($user) {
+						// Use prepared statements for selecting data
+						$stmt = $conn->prepare("SELECT medicine_name, dosage, reminder_time FROM medications WHERE user_id = ? ORDER BY reminder_time ASC");
+						$stmt->bind_param("i", $user);
+						$stmt->execute();
+						$result = $stmt->get_result();
 
-<th>Medicine</th>
+						while($row = $result->fetch_assoc())
+						{
+							echo "<tr>
+								<td><strong>".htmlspecialchars($row['medicine_name'])."</strong></td>
+								<td>".htmlspecialchars($row['dosage'])."</td>
+								<td>⏰ ".htmlspecialchars($row['reminder_time'])."</td>
+							</tr>";
+						}
+					}
+					?>
+				</tbody>
+			</table>
+		</div>
+	</div>
 
-<th>Dosage</th>
+	<!-- Firebase SDKs (compat) -->
+	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+	<script src="firebase-config.js"></script>
 
-<th>Reminder</th>
+	<script>
+		const auth = firebase.auth();
 
-</tr>
+		// Redirect to login if not authenticated
+		auth.onAuthStateChanged(user => {
+			if (!user) {
+				window.location = 'login.html';
+			}
+		});
 
-<?php
-
-$result=mysqli_query($conn,"SELECT * FROM medications WHERE user_id='$user'");
-
-while($row=mysqli_fetch_assoc($result))
-{
-
-echo"
-
-<tr>
-
-<td>".$row['medicine_name']."</td>
-
-<td>".$row['dosage']."</td>
-
-<td>".$row['reminder_time']."</td>
-
-</tr>
-
-";
-
-}
-
-?>
-
-</table>
-
-</div>
+		// Sign out handler
+		document.getElementById('signout-link').addEventListener('click', async (e) => {
+			e.preventDefault();
+			await auth.signOut();
+			window.location = 'login.html';
+		});
+	</script>
 
 </body>
 

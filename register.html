@@ -3,39 +3,109 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Register - FlareWise</title>
+	<title>Sign Up - FlareWise</title>
 	<link rel="stylesheet" href="style.css">
+	<style>
+		/* Navigation from index.html, adapted for this page */
+		nav {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 80px;
+			background: rgba(255, 255, 255, 0.7);
+			backdrop-filter: blur(20px);
+			border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+			z-index: 1000;
+			display: flex;
+			align-items: center;
+			padding: 0 40px;
+			box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+		}
+
+		.nav-brand {
+			font-size: 28px;
+			font-weight: 800;
+			background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+			letter-spacing: -1px;
+			margin-right: auto;
+		}
+
+		.nav-buttons {
+			display: flex;
+			gap: 15px;
+			align-items: center;
+		}
+
+		.nav-buttons a {
+			text-decoration: none;
+			padding: 10px 24px;
+			border-radius: 20px;
+			font-weight: 600;
+			font-size: 14px;
+			transition: all 0.3s ease;
+			white-space: nowrap;
+		}
+
+		.signin-btn {
+			background: rgba(2, 119, 189, 0.1);
+			color: #01579b;
+			border: 1.5px solid rgba(2, 119, 189, 0.3);
+		}
+
+		.signin-btn:hover {
+			background: rgba(2, 119, 189, 0.2);
+			border-color: rgba(2, 119, 189, 0.6);
+		}
+		
+		body {
+			padding-top: 80px;
+		}
+	</style>
 </head>
 <body>
+	<nav>
+		<a href="index.html" class="nav-brand" style="text-decoration: none;">FlareWise</a>
+		<div class="nav-buttons">
+			<a href="login.html" class="signin-btn">Sign In</a>
+		</div>
+	</nav>
+
 	<div class="container">
 		<h1>FlareWise</h1>
-		<h2>Create Account</h2>
+		<h2>Create Your Account</h2>
     
 		<form id="register-form">
 			<input id="reg-fullname" 
 				type="text" 
 				name="fullname" 
 				placeholder="Full Name" 
-				required>
+				required
+				autocomplete="name">
       
 			<input id="reg-email" 
 				type="email" 
 				name="email" 
 				placeholder="Email Address" 
-				required>
+				required
+				autocomplete="email">
       
 			<input id="reg-password" 
 				type="password" 
 				name="password" 
-				placeholder="Password" 
-				required>
+				placeholder="Password (min 6 characters)" 
+				required
+				autocomplete="new-password">
       
-			<input type="submit" value="Register">
+			<input type="submit" value="Create Account">
 		</form>
     
 		<p>
 			Already have an account? 
-			<a href="login.html">Login</a>
+			<a href="login.html">Sign in instead</a>
 		</p>
 	</div>
 
@@ -53,21 +123,32 @@
 			const email = document.getElementById('reg-email').value.trim();
 			const password = document.getElementById('reg-password').value;
 			try {
+				// 1. Create user in Firebase
 				const userCred = await auth.createUserWithEmailAndPassword(email, password);
+				const firebaseUser = userCred.user;
+
+				// 2. Update Firebase profile with full name
 				await userCred.user.updateProfile({ displayName: fullname });
-				const idToken = await userCred.user.getIdToken();
-				const response = await fetch('firebase-session.php', {
+
+				// 3. Send user data to our PHP backend to create a record and session
+				const response = await fetch('create_user.php', {
 					method: 'POST',
 					headers: {
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
 					},
-					body: JSON.stringify({ idToken })
+					body: JSON.stringify({
+						firebase_uid: firebaseUser.uid,
+						email: email,
+						fullname: fullname
+					})
 				});
+
 				if (!response.ok) {
-					const error = await response.json();
-					throw new Error(error.message || 'Server session failed');
+					throw new Error('Server error: Failed to create user in local database.');
 				}
-				window.location = 'dashboard.php';
+
+				// 4. Redirect to the dashboard on success
+				window.location.href = 'dashboard.php';
 			} catch (err) {
 				alert(err.message);
 			}

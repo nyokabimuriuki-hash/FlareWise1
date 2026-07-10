@@ -1,23 +1,33 @@
 <?php
 
 session_start();
+require_once 'db_connect.php';
 
-include("database.php");
-
-$user=$_SESSION['user_id'];
+$user=$_SESSION['user_id'] ?? null;
 
 if(isset($_POST['upload']))
 {
+	if(!$user) {
+		header('Location: login.html');
+		exit;
+	}
+	
+	if(!is_dir("uploads")) {
+		mkdir("uploads", 0755, true);
+	}
+	
+	$image=$_FILES['image']['name'];
+	$temp=$_FILES['image']['tmp_name'];
+	
+	if(!empty($image)) {
+		$image_new = time() . '_' . $image;
+		move_uploaded_file($temp,"uploads/".$image_new);
 
-$image=$_FILES['image']['name'];
-
-$temp=$_FILES['image']['tmp_name'];
-
-move_uploaded_file($temp,"uploads/".$image);
-
-mysqli_query($conn,"INSERT INTO skin_images(user_id,image_name)
-VALUES('$user','$image')");
-
+		$stmt = $conn->prepare("INSERT INTO skin_images(user_id, image_name) VALUES (?, ?)");
+		$stmt->bind_param("is", $user, $image_new);
+		$stmt->execute();
+		$stmt->close();
+	}
 }
 
 ?>
@@ -32,56 +42,83 @@ VALUES('$user','$image')");
 </head>
 <body>
 
-	<div class="sidebar">
-		<h2>FlareWise</h2>
-		<nav>
-			<a href="dashboard.php">🏠 Dashboard</a>
-			<a href="symptoms.php">🩹 Symptoms</a>
-			<a href="medication.php">💊 Medication</a>
-			<a href="upload.php">📷 Images</a>
-			<a href="profile.php">👤 Profile</a>
-			<a href="logout.php">🚪 Logout</a>
-		</nav>
-	</div>
+	<nav>
+		<div class="nav-container">
+			<div class="nav-brand">FlareWise</div>
+			<div class="nav-links">
+				<a href="dashboard.php">🏠 Dashboard</a>
+				<a href="symptoms.php">🩹 Symptoms</a>
+				<a href="medication.php">💊 Medication</a>
+				<a href="upload.php">📷 Images</a>
+				<a href="profile.php">👤 Profile</a>
+				<a href="about.php">ℹ️ About Us</a>
+			</div>
+			<div class="nav-auth">
+				<a id="signout-link" class="signout-btn">🚪 Sign Out</a>
+			</div>
+		</div>
+	</nav>
 
-<div class="main">
-		<h1>Skin Images</h1>
+	<div class="main">
+		<h1>📷 Skin Images</h1>
     
 		<div class="card">
-			<h2>Upload Image</h2>
+			<h2>Upload Skin Image</h2>
 			<form method="POST" enctype="multipart/form-data">
+				<label>Select Image</label>
 				<input type="file" name="image" accept="image/*" required>
+        
 				<input type="submit" name="upload" value="Upload Image">
 			</form>
 		</div>
     
+		<hr>
+
+		<h2 class="section-title">🖼️ Your Image Gallery</h2>
+
 		<div class="recent">
-			<h2>Your Images</h2>
-			<div class="image-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+			<div class="image-gallery">
+				<?php
+				if($user) {
+					$stmt = $conn->prepare("SELECT image_name FROM skin_images WHERE user_id = ? ORDER BY image_id DESC");
+					$stmt->bind_param("i", $user);
+					$stmt->execute();
+					$result = $stmt->get_result();
 
-<hr>
+					while($row = $result->fetch_assoc())
+					{
+						?>
+						<img src="uploads/<?php echo htmlspecialchars($row['image_name']);?>" alt="Skin image">
+						<?php
+					}
+				}
+				?>
+			</div>
+		</div>
+	</div>
 
-<?php
+	<!-- Firebase SDKs (compat) -->
+	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+	<script src="firebase-config.js"></script>
 
-$result=mysqli_query($conn,"SELECT * FROM skin_images WHERE user_id='$user'");
+	<script>
+		const auth = firebase.auth();
 
-while($row=mysqli_fetch_assoc($result))
-{
+		// Redirect to login if not authenticated
+		auth.onAuthStateChanged(user => {
+			if (!user) {
+				window.location = 'login.html';
+			}
+		});
 
-?>
-
-<img
-src="uploads/<?php echo $row['image_name'];?>"
-width="200"
-style="margin:15px;">
-
-<?php
-
-}
-
-?>
-
-</div>
+		// Sign out handler
+		document.getElementById('signout-link').addEventListener('click', async (e) => {
+			e.preventDefault();
+			await auth.signOut();
+			window.location = 'login.html';
+		});
+	</script>
 
 </body>
 

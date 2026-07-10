@@ -8,60 +8,67 @@
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>FlareWise</h2>
-        <nav>
-            <a href="dashboard.php">🏠 Dashboard</a>
-            <a href="symptoms.php">🩹 Symptoms</a>
-            <a href="medication.php">💊 Medication</a>
-            <a href="upload.php">📷 Images</a>
-            <a href="profile.php">👤 Profile</a>
-            <a id="signout-link" href="#">🚪 Sign Out</a>
-        </nav>
-    </div>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-brand">FlareWise</div>
+            <div class="nav-links">
+                <a href="dashboard.php">🏠 Dashboard</a>
+                <a href="symptoms.php">🩹 Symptoms</a>
+                <a href="medication.php">💊 Medication</a>
+                <a href="upload.php">📷 Images</a>
+                <a href="profile.php">👤 Profile</a>
+                <a href="about.php">ℹ️ About Us</a>
+            </div>
+            <div class="nav-auth">
+                <a id="signout-link" class="signout-btn">🚪 Sign Out</a>
+            </div>
+        </div>
+    </nav>
 
     <div class="main">
-        <h1 id="welcome">Welcome,</h1>
+        <h1 id="welcome">Welcome to FlareWise</h1>
 
         <div class="cards">
             <div class="card">
                 <h2>Today's Symptoms</h2>
                 <h1 id="symptoms-count">0</h1>
-                <p>No symptoms recorded today.</p>
+                <p>Tracked symptoms today</p>
             </div>
 
             <div class="card">
-                <h2>Medications</h2>
+                <h2>Active Medications</h2>
                 <h1 id="med-count">0</h1>
-                <p>No reminders today.</p>
-            </div>
-
-            <div class="card">
-                <h2>Weather Status</h2>
-                <h1>24°C</h1>
-                <p>Humidity 62%</p>
+                <p>Medications to take</p>
             </div>
 
             <div class="card">
                 <h2>Flare Risk</h2>
-                <h1>Low</h1>
-                <p>Good weather today.</p>
+                <h1 style="color: #4caf50;">Low</h1>
+                <p>Good conditions today</p>
+            </div>
+
+            <div class="card">
+                <h2>Skin Health</h2>
+                <h1 style="color: #2196f3;">Good</h1>
+                <p>Keep up the routine</p>
             </div>
         </div>
 
         <div class="recent">
-            <h2>Recent Activity</h2>
+            <h2>📊 Your Activity</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Activity</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>Today</td>
                         <td>Logged into FlareWise</td>
+                        <td><span style="color: #4caf50;">✓ Active</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -91,7 +98,7 @@
         document.getElementById('signout-link').addEventListener('click', async (e) => {
             e.preventDefault();
             await auth.signOut();
-            window.location = 'logout.php';
+            window.location = 'login.html';
         });
     </script>
 

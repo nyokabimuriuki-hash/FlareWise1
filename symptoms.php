@@ -1,25 +1,29 @@
 <?php
 
 session_start();
-include("database.php");
+require_once 'db_connect.php';
 
-$user=$_SESSION['user_id'];
+$user=$_SESSION['user_id'] ?? null;
 
 if(isset($_POST['save']))
 {
+	if(!$user) {
+		header('Location: login.html');
+		exit;
+	}
+	
+	$itching=$_POST['itching'];
+	$redness=$_POST['redness'];
+	$dryness=$_POST['dryness'];
+	$irritation=$_POST['irritation'];
+	$notes=$_POST['notes'];
+	$date=$_POST['date'];
 
-$itching=$_POST['itching'];
-$redness=$_POST['redness'];
-$dryness=$_POST['dryness'];
-$irritation=$_POST['irritation'];
-$notes=$_POST['notes'];
-$date=$_POST['date'];
-
-$sql="INSERT INTO symptoms(user_id,itching,redness,dryness,irritation,notes,symptom_date)
-VALUES('$user','$itching','$redness','$dryness','$irritation','$notes','$date')";
-
-mysqli_query($conn,$sql);
-
+	// Use prepared statements to prevent SQL injection
+	$stmt = $conn->prepare("INSERT INTO symptoms(user_id, itching, redness, dryness, irritation, notes, symptom_date) VALUES (?, ?, ?, ?, ?, ?, ?)");
+	$stmt->bind_param("iiiiiss", $user, $itching, $redness, $dryness, $irritation, $notes, $date);
+	$stmt->execute();
+	$stmt->close();
 }
 
 ?>
@@ -34,94 +38,116 @@ mysqli_query($conn,$sql);
 </head>
 <body>
 
-<div class="sidebar">
-		<h2>FlareWise</h2>
-		<nav>
-			<a href="dashboard.php">🏠 Dashboard</a>
-			<a href="symptoms.php">🩹 Symptoms</a>
-			<a href="medication.php">💊 Medication</a>
-			<a href="upload.php">📷 Images</a>
-			<a href="profile.php">👤 Profile</a>
-			<a href="logout.php">🚪 Logout</a>
-		</nav>
-	</div>
+	<nav>
+		<div class="nav-container">
+			<div class="nav-brand">FlareWise</div>
+			<div class="nav-links">
+				<a href="dashboard.php">🏠 Dashboard</a>
+				<a href="symptoms.php">🩹 Symptoms</a>
+				<a href="medication.php">💊 Medication</a>
+				<a href="upload.php">📷 Images</a>
+				<a href="profile.php">👤 Profile</a>
+				<a href="about.php">ℹ️ About Us</a>
+			</div>
+			<div class="nav-auth">
+				<a id="signout-link" class="signout-btn">🚪 Sign Out</a>
+			</div>
+		</div>
+	</nav>
 
-<div class="main">
-		<h1>Symptom Tracker</h1>
+	<div class="main">
+		<h1>📊 Symptom Tracker</h1>
     
 		<div class="card">
 			<h2>Log Your Symptoms</h2>
 			<form method="POST">
-				<label>Itching (1-10)</label>
+				<label>Itching Severity (1-10)</label>
 				<input type="number" name="itching" min="1" max="10" required>
         
-				<label>Redness (1-10)</label>
-				<input type="number" name="redness" min="1" max="10">
+				<label>Redness Level (1-10)</label>
+				<input type="number" name="redness" min="1" max="10" required>
         
-				<label>Dryness (1-10)</label>
-				<input type="number" name="dryness" min="1" max="10">
+				<label>Dryness Level (1-10)</label>
+				<input type="number" name="dryness" min="1" max="10" required>
         
-				<label>Irritation (1-10)</label>
-				<input type="number" name="irritation" min="1" max="10">
+				<label>Irritation Level (1-10)</label>
+				<input type="number" name="irritation" min="1" max="10" required>
         
-				<label>Notes</label>
-				<textarea name="notes" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: 1px solid rgba(2, 119, 189, 0.3); background: rgba(255, 255, 255, 0.25); color: #01579b;"></textarea>
+				<label>Additional Notes</label>
+				<textarea name="notes" placeholder="Any observations or triggers?"></textarea>
         
 				<label>Date</label>
-				<input type="date" name="date" required>
+				<input type="date" name="date" value="<?php echo date('Y-m-d'); ?>" required>
         
-				<input type="submit" name="save" value="Save Symptom">
+				<input type="submit" name="save" value="Save Symptom Record">
 			</form>
 		</div>
 
-<hr>
+		<hr>
 
-<h2>Previous Records</h2>
+		<h2 class="section-title">📋 Your Symptom History</h2>
 
-<table>
+		<div class="recent">
+			<table>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Itching</th>
+						<th>Redness</th>
+						<th>Dryness</th>
+						<th>Irritation</th>
+						<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					if($user) {
+						// Use prepared statements for selecting data
+						$stmt = $conn->prepare("SELECT symptom_date, itching, redness, dryness, irritation, notes FROM symptoms WHERE user_id = ? ORDER BY symptom_date DESC LIMIT 20");
+						$stmt->bind_param("i", $user);
+						$stmt->execute();
+						$result = $stmt->get_result();
 
-<tr>
+						while($row = $result->fetch_assoc())
+						{
+							echo "<tr>
+								<td>".htmlspecialchars($row['symptom_date'])."</td>
+								<td><strong>".htmlspecialchars($row['itching'])."</strong>/10</td>
+								<td><strong>".htmlspecialchars($row['redness'])."</strong>/10</td>
+								<td><strong>".htmlspecialchars($row['dryness'])."</strong>/10</td>
+								<td><strong>".htmlspecialchars($row['irritation'])."</strong>/10</td>
+								<td>".htmlspecialchars(strlen($row['notes']) > 30 ? substr($row['notes'], 0, 30).'...' : $row['notes'])."</td>
+							</tr>";
+						}
+					}
+					?>
+				</tbody>
+			</table>
+		</div>
+	</div>
 
-<th>Date</th>
-<th>Itching</th>
-<th>Redness</th>
-<th>Dryness</th>
-<th>Irritation</th>
+	<!-- Firebase SDKs (compat) -->
+	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+	<script src="firebase-config.js"></script>
 
-</tr>
+	<script>
+		const auth = firebase.auth();
 
-<?php
+		// Redirect to login if not authenticated
+		auth.onAuthStateChanged(user => {
+			if (!user) {
+				window.location = 'login.html';
+			}
+		});
 
-$result=mysqli_query($conn,"SELECT * FROM symptoms WHERE user_id='$user' ORDER BY symptom_date DESC");
-
-while($row=mysqli_fetch_assoc($result))
-{
-
-echo"
-
-<tr>
-
-<td>".$row['symptom_date']."</td>
-
-<td>".$row['itching']."</td>
-
-<td>".$row['redness']."</td>
-
-<td>".$row['dryness']."</td>
-
-<td>".$row['irritation']."</td>
-
-</tr>
-
-";
-
-}
-
-?>
-
-</table>
-
-</div>
+		// Sign out handler
+		document.getElementById('signout-link').addEventListener('click', async (e) => {
+			e.preventDefault();
+			await auth.signOut();
+			window.location = 'login.html';
+		});
+	</script>
 
 </body>
 
