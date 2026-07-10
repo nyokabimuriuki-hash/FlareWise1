@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Register - FlareWise</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="container">
+		<h1>FlareWise</h1>
+		<h2>Create Account</h2>
+    
+		<form id="register-form">
+			<input id="reg-fullname" 
+				type="text" 
+				name="fullname" 
+				placeholder="Full Name" 
+				required>
+      
+			<input id="reg-email" 
+				type="email" 
+				name="email" 
+				placeholder="Email Address" 
+				required>
+      
+			<input id="reg-password" 
+				type="password" 
+				name="password" 
+				placeholder="Password" 
+				required>
+      
+			<input type="submit" value="Register">
+		</form>
+    
+		<p>
+			Already have an account? 
+			<a href="login.html">Login</a>
+		</p>
+	</div>
+
+	<!-- Firebase SDKs (compat) -->
+	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+	<script src="firebase-config.js"></script>
+
+	<script>
+		const auth = firebase.auth();
+
+		document.getElementById('register-form').addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const fullname = document.getElementById('reg-fullname').value.trim();
+			const email = document.getElementById('reg-email').value.trim();
+			const password = document.getElementById('reg-password').value;
+			try {
+				const userCred = await auth.createUserWithEmailAndPassword(email, password);
+				await userCred.user.updateProfile({ displayName: fullname });
+				const idToken = await userCred.user.getIdToken();
+				const response = await fetch('firebase-session.php', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ idToken })
+				});
+				if (!response.ok) {
+					const error = await response.json();
+					throw new Error(error.message || 'Server session failed');
+				}
+				window.location = 'dashboard.php';
+			} catch (err) {
+				alert(err.message);
+			}
+		});
+	</script>
+</body>
+</html>
