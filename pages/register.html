@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Sign Up - FlareWise</title>
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="../assets/css/app.css">
 	<style>
 		/* Navigation from index.html, adapted for this page */
 		nav {
@@ -68,7 +68,7 @@
 </head>
 <body>
 	<nav>
-		<a href="index.php" class="nav-brand" style="text-decoration: none;">FlareWise</a>
+		<a href="../index.php" class="nav-brand" style="text-decoration: none;">FlareWise</a>
 		<div class="nav-buttons">
 			<a href="login.html" class="signin-btn">Sign In</a>
 		</div>
@@ -112,7 +112,7 @@
 	<!-- Firebase SDKs (compat) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-	<script src="firebase-config.js"></script>
+	<script src="../assets/js/firebase-config.js"></script>
 
 	<script>
 		const auth = firebase.auth();
@@ -131,7 +131,7 @@
 				await userCred.user.updateProfile({ displayName: fullname });
 
 				// 3. Send user data to our PHP backend to create a record and session
-				const response = await fetch('create_user.php', {
+				const response = await fetch('../api/create_user.php', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',

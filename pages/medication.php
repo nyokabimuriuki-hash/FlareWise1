@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-require_once 'db_connect.php';
+require_once __DIR__ . '/../config/database.php';
 
 // If user is not logged in, redirect to login page
 if (!isset($_SESSION['user_id'])) {
@@ -30,7 +30,7 @@ if (isset($_POST['save'])) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Medications - FlareWise</title>
-	<link rel="stylesheet" href="dashboard.css">
+	<link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body>
 
@@ -108,7 +108,7 @@ if (isset($_POST['save'])) {
 	<!-- Firebase SDKs (compat) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-	<script src="firebase-config.js"></script>
+	<script src="../assets/js/firebase-config.js"></script>
 
 	<script>
 		const auth = firebase.auth();
@@ -123,10 +123,10 @@ if (isset($_POST['save'])) {
 		// Sign out handler
 		document.getElementById('signout-link').addEventListener('click', async (e) => {
 			e.preventDefault();
-			await fetch('logout_session.php');
+			await fetch('../api/logout_session.php');
 			await auth.signOut();
 			// Redirect to main page, not login, as index.php handles routing
-			window.location.href = 'index.php';
+			window.location.href = '../index.php';
 		});
 	</script>
 

@@ -7,6 +7,9 @@ CREATE TABLE users (
     firebase_uid VARCHAR(128) UNIQUE NOT NULL,
     fullname VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
+    -- Kept nullable for compatibility with the earlier password-based version.
+    -- Current authentication uses firebase_uid instead.
+    password VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

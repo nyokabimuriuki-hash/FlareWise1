@@ -3,7 +3,7 @@ session_start();
 
 // If a user is already logged in (has a PHP session), redirect them straight to the dashboard.
 if (isset($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
+    header('Location: pages/dashboard.php');
     exit;
 }
 ?>
@@ -346,14 +346,15 @@ if (isset($_SESSION['user_id'])) {
 			}
 		}
 	</style>
+	<link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
 
 	<nav>
 		<div class="nav-brand">FlareWise</div>
 		<div class="nav-buttons">
-			<a href="login.html" class="signin-btn">Sign In</a>
-			<a href="register.html" class="signup-btn">Sign Up</a>
+			<a href="pages/login.html" class="signin-btn">Sign In</a>
+			<a href="pages/register.html" class="signup-btn">Sign Up</a>
 		</div>
 	</nav>
 
@@ -394,7 +395,7 @@ if (isset($_SESSION['user_id'])) {
 					</div>
 				</div>
 			</div>
-			<a href="register.html" class="cta-button">Create Your Account</a>
+			<a href="pages/register.html" class="cta-button">Create Your Account</a>
 		</div>
 
 		<div class="hero-visual">
@@ -405,8 +406,8 @@ if (isset($_SESSION['user_id'])) {
 	<footer>
 		<p>
 			FlareWise © 2026 | 
-			<a href="about.php">About Us</a> | 
-			<a href="login.html">Sign In</a>
+			<a href="pages/about.php">About Us</a> |
+			<a href="pages/login.html">Sign In</a>
 		</p>
 	</footer>
 

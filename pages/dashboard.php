@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'db_connect.php';
+require_once __DIR__ . '/../config/database.php';
 
 // If user is not logged in via PHP session, redirect to login page
 if (!isset($_SESSION['user_id'])) {
@@ -68,7 +68,7 @@ $stmt_image->bind_param("i", $user_id);
 $stmt_image->execute();
 $result_image = $stmt_image->get_result();
 if ($row = $result_image->fetch_assoc()) {
-    $latest_image = 'uploads/' . htmlspecialchars($row['image_name']);
+    $latest_image = '../uploads/' . htmlspecialchars($row['image_name']);
 }
 $stmt_image->close();
 
@@ -79,7 +79,7 @@ $stmt_image->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - FlareWise</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../assets/css/app.css">
     <style>
         .latest-image-container {
             width: 100%;
@@ -161,7 +161,7 @@ $stmt_image->close();
     <!-- Firebase SDKs (compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="firebase-config.js"></script>
+    <script src="../assets/js/firebase-config.js"></script>
 
     <script>
         const auth = firebase.auth();
@@ -179,11 +179,11 @@ $stmt_image->close();
         document.getElementById('signout-link').addEventListener('click', async (e) => {
             e.preventDefault();
             // First, destroy the PHP session
-            await fetch('logout_session.php');
+            await fetch('../api/logout_session.php');
             // Then, sign out from Firebase
             await auth.signOut();
             // Finally, redirect to the main page
-            window.location.href = 'index.php';
+            window.location.href = '../index.php';
         });
     </script>
 

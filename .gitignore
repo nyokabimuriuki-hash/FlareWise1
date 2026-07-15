@@ -1,0 +1,8 @@
+# Runtime user uploads (keep the directory itself with uploads/.gitkeep)
+uploads/*
+!uploads/.gitkeep
+
+# Local editor and operating-system files
+.vscode/
+.DS_Store
+Thumbs.db

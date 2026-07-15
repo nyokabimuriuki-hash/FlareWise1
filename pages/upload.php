@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-require_once 'db_connect.php';
+require_once __DIR__ . '/../config/database.php';
 
 // If user is not logged in, redirect to login page
 if (!isset($_SESSION['user_id'])) {
@@ -11,8 +11,9 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 if (isset($_POST['upload'])) {
-	if(!is_dir("uploads")) {
-		mkdir("uploads", 0755, true);
+	$uploadDirectory = __DIR__ . '/../uploads';
+	if(!is_dir($uploadDirectory)) {
+		mkdir($uploadDirectory, 0755, true);
 	}
 	
 	$image=$_FILES['image']['name'];
@@ -20,7 +21,7 @@ if (isset($_POST['upload'])) {
 	
 	if(!empty($image)) {
 		$image_new = time() . '_' . $image;
-		move_uploaded_file($temp,"uploads/".$image_new);
+		move_uploaded_file($temp, $uploadDirectory . '/' . $image_new);
 
 		$stmt = $conn->prepare("INSERT INTO skin_images(user_id, image_name) VALUES (?, ?)");
 		$stmt->bind_param("is", $user_id, $image_new);
@@ -37,7 +38,7 @@ if (isset($_POST['upload'])) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Skin Images - FlareWise</title>
-	<link rel="stylesheet" href="dashboard.css">
+	<link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body>
 
@@ -86,7 +87,7 @@ if (isset($_POST['upload'])) {
 				while($row = $result->fetch_assoc())
 				{
 					?>
-					<img src="uploads/<?php echo htmlspecialchars($row['image_name']);?>" alt="Skin image">
+					<img src="../uploads/<?php echo htmlspecialchars($row['image_name']);?>" alt="Skin image">
 					<?php
 				}
 				?>
@@ -97,7 +98,7 @@ if (isset($_POST['upload'])) {
 	<!-- Firebase SDKs (compat) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-	<script src="firebase-config.js"></script>
+	<script src="../assets/js/firebase-config.js"></script>
 
 	<script>
 		const auth = firebase.auth();
@@ -112,10 +113,10 @@ if (isset($_POST['upload'])) {
 		// Sign out handler
 		document.getElementById('signout-link').addEventListener('click', async (e) => {
 			e.preventDefault();
-			await fetch('logout_session.php');
+			await fetch('../api/logout_session.php');
 			await auth.signOut();
 			// Redirect to main page, not login, as index.php handles routing
-			window.location.href = 'index.php';
+			window.location.href = '../index.php';
 		});
 	</script>
 

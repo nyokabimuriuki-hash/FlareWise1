@@ -3,7 +3,7 @@ session_start();
 
 // Include your database connection file
 // Make sure to create this file with your database credentials
-require_once 'db_connect.php';
+require_once __DIR__ . '/../config/database.php';
 
 // Get the raw POST data
 $json = file_get_contents('php://input');

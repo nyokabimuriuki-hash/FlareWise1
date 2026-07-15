@@ -28,13 +28,7 @@ $uid = $payload['sub'];
 $email = isset($payload['email']) ? $payload['email'] : '';
 $fullname = isset($payload['name']) ? $payload['name'] : $email;
 
-include('database.php');
-
-// Add firebase_uid column if it doesn't exist.
-$columnCheck = mysqli_query($conn, "SHOW COLUMNS FROM users LIKE 'firebase_uid'");
-if (!$columnCheck || mysqli_num_rows($columnCheck) === 0) {
-    mysqli_query($conn, "ALTER TABLE users ADD COLUMN firebase_uid VARCHAR(128) NULL UNIQUE");
-}
+require_once __DIR__ . '/../config/database.php';
 
 $escapedUid = mysqli_real_escape_string($conn, $uid);
 $escapedEmail = mysqli_real_escape_string($conn, $email);

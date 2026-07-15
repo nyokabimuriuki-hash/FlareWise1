@@ -179,10 +179,11 @@
 			text-decoration: underline;
 		}
 	</style>
+	<link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body>
 	<nav>
-		<a href="index.php" class="nav-brand" style="text-decoration: none;">FlareWise</a>
+		<a href="../index.php" class="nav-brand" style="text-decoration: none;">FlareWise</a>
 		<div class="nav-buttons">
 			<a href="register.html" class="signup-btn">Sign Up</a>
 		</div>
@@ -221,15 +222,46 @@
 	<!-- Firebase SDKs (compat) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-	<script src="firebase-config.js"></script>
+	<script src="../assets/js/firebase-config.js"></script>
 
 	<script>
 		const auth = firebase.auth();
+		let isCreatingSession = false;
 
-		// Redirect already-signed-in users
-		auth.onAuthStateChanged(user => {
-			if (user) {
-				window.location = 'dashboard.php';
+		// Create the matching PHP session before opening a protected PHP page.
+		// This prevents a Firebase-only login from bouncing between this page and
+		// dashboard.php when the PHP session has expired.
+		async function createPhpSession(firebaseUser) {
+			const response = await fetch('../api/login_session.php', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					firebase_uid: firebaseUser.uid,
+					email: firebaseUser.email,
+					fullname: firebaseUser.displayName || firebaseUser.email
+				})
+			});
+
+			if (!response.ok) {
+				const result = await response.json().catch(() => ({}));
+				throw new Error(result.message || 'Unable to start your FlareWise session.');
+			}
+		}
+
+		// Restore a PHP session for a Firebase user remembered by this browser.
+		auth.onAuthStateChanged(async user => {
+			if (!user || isCreatingSession) return;
+
+			isCreatingSession = true;
+			try {
+				await createPhpSession(user);
+				window.location.replace('dashboard.php');
+			} catch (err) {
+				await auth.signOut();
+				document.getElementById('error-container').textContent =
+					'Your sign-in session could not be restored. Please sign in again.';
+				document.getElementById('error-container').style.display = 'block';
+				isCreatingSession = false;
 			}
 		});
 
@@ -241,26 +273,18 @@
 			const email = document.getElementById('login-email').value.trim();
 			const password = document.getElementById('login-password').value;
 			try {
+				isCreatingSession = true;
 				// 1. Sign in with Firebase
 				const userCred = await auth.signInWithEmailAndPassword(email, password);
 				const firebaseUser = userCred.user;
 
-				// 2. Call our backend to create a PHP session
-				const response = await fetch('login_session.php', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ firebase_uid: firebaseUser.uid })
-				});
-
-				if (!response.ok) {
-					throw new Error('Server error: Failed to create a server session.');
-				}
+				// 2. Create the server-side session required by dashboard.php.
+				await createPhpSession(firebaseUser);
 
 				// 3. Redirect to the dashboard
 				window.location.href = 'dashboard.php';
 			} catch (err) {
+				isCreatingSession = false;
 				alert(err.message);
 				let friendlyMessage = 'An unexpected error occurred. Please try again.';
 				switch (err.code) {

@@ -8,7 +8,7 @@ session_start();
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>About Us - FlareWise</title>
-	<link rel="stylesheet" href="dashboard.css">
+	<link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body>
 
@@ -78,7 +78,7 @@ session_start();
 	<!-- Firebase SDKs (compat) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-	<script src="firebase-config.js"></script>
+	<script src="../assets/js/firebase-config.js"></script>
 
 	<script>
 		const auth = firebase.auth();
@@ -88,9 +88,9 @@ session_start();
 		if(signoutLink) {
 			signoutLink.addEventListener('click', async (e) => {
 				e.preventDefault();
-				await fetch('logout_session.php');
+				await fetch('../api/logout_session.php');
 				await auth.signOut();
-				window.location.href = 'index.php';
+			window.location.href = '../index.php';
 			});
 		}
 	</script>
