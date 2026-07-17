@@ -10,16 +10,28 @@ if (!isset($_SESSION['user_id'])) {
 }
 $user_id = $_SESSION['user_id'];
 
-if (isset($_POST['save'])) {
-	$name=$_POST['medicine'];
-	$dosage=$_POST['dosage'];
-	$time=$_POST['time'];
+// The app also works with the original database, but the optional upgrade adds
+// a category so users can distinguish medication from a skincare routine.
+$type_column = $conn->query("SHOW COLUMNS FROM medications LIKE 'reminder_type'")->num_rows > 0;
+$saved_message = '';
 
-	// Use prepared statements to prevent SQL injection
-	$stmt = $conn->prepare("INSERT INTO medications(user_id, medicine_name, dosage, reminder_time) VALUES (?, ?, ?, ?)");
-	$stmt->bind_param("isss", $user_id, $name, $dosage, $time);
-	$stmt->execute();
-	$stmt->close();
+if (isset($_POST['save'])) {
+	$name=trim($_POST['medicine']);
+	$dosage=trim($_POST['dosage']);
+	$time=$_POST['time'];
+	$type=($_POST['reminder_type'] ?? 'Medication') === 'Skincare' ? 'Skincare' : 'Medication';
+
+	if ($name !== '' && $dosage !== '' && preg_match('/^([01]\\d|2[0-3]):[0-5]\\d$/', $time)) {
+		if ($type_column) {
+			$stmt = $conn->prepare("INSERT INTO medications(user_id, medicine_name, dosage, reminder_type, reminder_time) VALUES (?, ?, ?, ?, ?)");
+			$stmt->bind_param("issss", $user_id, $name, $dosage, $type, $time);
+		} else {
+			$stmt = $conn->prepare("INSERT INTO medications(user_id, medicine_name, dosage, reminder_time) VALUES (?, ?, ?, ?)");
+			$stmt->bind_param("isss", $user_id, $name, $dosage, $time);
+		}
+		$stmt->execute(); $stmt->close();
+		$saved_message = 'Reminder saved. Keep this page or the dashboard open to receive alerts.';
+	}
 }
 
 ?>
@@ -53,6 +65,8 @@ if (isset($_POST['save'])) {
 
 	<div class="main">
 		<h1>Medication Reminders</h1>
+		<?php if ($saved_message): ?><p class="notice"><?php echo htmlspecialchars($saved_message); ?></p><?php endif; ?>
+		<p class="notice">FlareWise shows an in-app alert at the scheduled time. Select <strong>Enable browser notifications</strong> to also receive a browser notification while FlareWise is open.</p>
     
 		<div class="card">
 			<h2>Add New Medication</h2>
@@ -62,11 +76,18 @@ if (isset($_POST['save'])) {
         
 				<label>Dosage</label>
 				<input type="text" name="dosage" placeholder="e.g., 2 tablets, 1 application" required>
+
+				<label>Reminder Type</label>
+				<select name="reminder_type">
+					<option value="Medication">Medication</option>
+					<option value="Skincare">Skincare routine</option>
+				</select>
         
 				<label>Reminder Time</label>
 				<input type="time" name="time" required>
         
-				<input type="submit" name="save" value="Add Medication">
+				<input type="submit" name="save" value="Save Reminder">
+				<button type="button" class="button-secondary" onclick="enableFlarewiseNotifications()">Enable browser notifications</button>
 			</form>
 		</div>
 
@@ -80,22 +101,27 @@ if (isset($_POST['save'])) {
 					<tr>
 						<th>Medicine Name</th>
 						<th>Dosage</th>
+						<th>Type</th>
 						<th>Reminder Time</th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php
 					// Use prepared statements for selecting data
-					$stmt = $conn->prepare("SELECT medicine_name, dosage, reminder_time FROM medications WHERE user_id = ? ORDER BY reminder_time ASC");
+					$select_columns = $type_column ? 'medication_id, medicine_name, dosage, reminder_type, reminder_time' : 'medication_id, medicine_name, dosage, reminder_time';
+					$stmt = $conn->prepare("SELECT $select_columns FROM medications WHERE user_id = ? ORDER BY reminder_time ASC");
 					$stmt->bind_param("i", $user_id);
 					$stmt->execute();
 					$result = $stmt->get_result();
 
+					$reminders = [];
 					while($row = $result->fetch_assoc())
 					{
+						$reminders[] = ['id' => (int)$row['medication_id'], 'name' => $row['medicine_name'], 'dosage' => $row['dosage'], 'time' => $row['reminder_time']];
 						echo "<tr>
 							<td><strong>".htmlspecialchars($row['medicine_name'])."</strong></td>
 							<td>".htmlspecialchars($row['dosage'])."</td>
+							<td>".htmlspecialchars($row['reminder_type'] ?? 'Medication')."</td>
 							<td>".htmlspecialchars(date("g:i A", strtotime($row['reminder_time'])))."</td>
 						</tr>";
 					}
@@ -109,6 +135,8 @@ if (isset($_POST['save'])) {
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 	<script src="../assets/js/firebase-config.js"></script>
+	<script>window.flarewiseReminders = <?php echo json_encode($reminders ?? []); ?>;</script>
+	<script src="../assets/js/reminders.js"></script>
 
 	<script>
 		const auth = firebase.auth();

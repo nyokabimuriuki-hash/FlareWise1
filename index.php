@@ -376,6 +376,13 @@ if (isset($_SESSION['user_id'])) {
 
 				<div class="feature-item">
 					<div class="feature-text">
+						<h3>Predictive Insights</h3>
+						<p>Analyze ingredients, predict flare-ups, and get personalized skincare advice.</p>
+					</div>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-text">
 						<h3>Medication Log</h3>
 						<p>Organize your treatment schedule with simple reminders.</p>
 					</div>

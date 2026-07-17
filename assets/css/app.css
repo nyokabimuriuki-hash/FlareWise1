@@ -128,6 +128,13 @@ input[type="submit"]:hover, button:hover, .cta-button:hover { transform: transla
 table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 16px; }
 th, td { padding: 14px; text-align: left; border-bottom: 1px solid rgba(109,184,219,.18); }
 th { color: var(--muted); font-size: .75rem; letter-spacing:.08em; text-transform: uppercase; }
+.notice { margin: 0 0 20px; padding: 13px 16px; color: #155d7b; background: rgba(188, 240, 255, .58); border: 1px solid rgba(70, 184, 229, .38); border-radius: 14px; }
+.notice.warning { color: #7c4c00; background: rgba(255, 227, 165, .62); border-color: rgba(226, 155, 22, .38); }
+.reminder-alert { position: fixed; right: 20px; bottom: 20px; z-index: 100; max-width: 360px; padding: 15px 18px; color: #073a57; background: #e9faff; border: 1px solid #85d9fb; border-radius: 15px; box-shadow: var(--shadow); font-weight: 700; }
+.button-secondary { margin-left: 8px; color: var(--blue-deep); background: rgba(255,255,255,.7); border-color: rgba(79,183,234,.45); box-shadow: none; }
+.trend-bars { display: grid; grid-template-columns: repeat(7, 1fr); align-items: end; gap: 10px; min-height: 145px; margin-top: 16px; }
+.trend-day { text-align: center; color: var(--muted); font-size: .72rem; }
+.trend-bar { width: 100%; min-height: 4px; margin-bottom: 7px; border-radius: 8px 8px 3px 3px; background: linear-gradient(#53d2ff, #2781dc); }
 
 /* --- Landing and account screens ------------------------------------------ */
 .hero { width: min(1180px, calc(100% - 32px)); min-height: calc(100vh - 110px); margin: 0 auto; padding: 76px 0 42px; display:grid; grid-template-columns: 1.15fr .85fr; align-items:center; gap: 40px; }

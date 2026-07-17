@@ -30,6 +30,7 @@ CREATE TABLE medications (
     user_id INT,
     medicine_name VARCHAR(100),
     dosage VARCHAR(50),
+    reminder_type ENUM('Medication', 'Skincare') NOT NULL DEFAULT 'Medication',
     reminder_time TIME,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
@@ -64,4 +65,11 @@ CREATE TABLE weather_history(
     humidity DOUBLE,
     flare_risk VARCHAR(20),
     date_checked TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE weather_preferences (
+    user_id INT PRIMARY KEY,
+    city VARCHAR(100) NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
 );

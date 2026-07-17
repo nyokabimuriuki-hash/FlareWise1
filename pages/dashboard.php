@@ -60,6 +60,22 @@ if ($latest_symptom = $result_latest_symptom->fetch_assoc()) {
 }
 $stmt_latest_symptom->close();
 
+// Seven-day symptom trend: average of the four eczema symptoms for each day.
+$trend = [];
+$stmt_trend = $conn->prepare("SELECT symptom_date, ROUND(AVG((itching + redness + dryness + irritation) / 4), 1) AS average_severity FROM symptoms WHERE user_id = ? AND symptom_date >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) GROUP BY symptom_date ORDER BY symptom_date ASC");
+$stmt_trend->bind_param("i", $user_id); $stmt_trend->execute();
+$trend_result = $stmt_trend->get_result();
+while ($row = $trend_result->fetch_assoc()) { $trend[$row['symptom_date']] = (float)$row['average_severity']; }
+$stmt_trend->close();
+
+// Reminders are supplied to the browser to trigger an alert at the saved time.
+$reminders = [];
+$stmt_reminders = $conn->prepare("SELECT medication_id, medicine_name, dosage, reminder_time FROM medications WHERE user_id = ? ORDER BY reminder_time ASC");
+$stmt_reminders->bind_param("i", $user_id); $stmt_reminders->execute();
+$reminder_result = $stmt_reminders->get_result();
+while ($row = $reminder_result->fetch_assoc()) { $reminders[] = ['id' => (int)$row['medication_id'], 'name' => $row['medicine_name'], 'dosage' => $row['dosage'], 'time' => $row['reminder_time']]; }
+$stmt_reminders->close();
+
 // Fetch latest image for Skin Health card
 $latest_image = null;
 // Assuming `image_id` is the auto-incrementing primary key for the skin_images table
@@ -155,37 +171,3 @@ $stmt_image->close();
                 <?php endif; ?>
             </div>
         </div>
-
-    </div>
-
-    <!-- Firebase SDKs (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="../assets/js/firebase-config.js"></script>
-
-    <script>
-        const auth = firebase.auth();
-
-        // Redirect to login if not authenticated
-        auth.onAuthStateChanged(user => {
-            if (!user) {
-                // This is a fallback check. If the PHP session is valid but Firebase is not,
-                // it will redirect to login.
-                window.location = 'login.html';
-            }
-        });
-
-        // Sign out handler
-        document.getElementById('signout-link').addEventListener('click', async (e) => {
-            e.preventDefault();
-            // First, destroy the PHP session
-            await fetch('../api/logout_session.php');
-            // Then, sign out from Firebase
-            await auth.signOut();
-            // Finally, redirect to the main page
-            window.location.href = '../index.php';
-        });
-    </script>
-
-</body>
-</html>
