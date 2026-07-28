@@ -88,6 +88,40 @@ if ($row = $result_image->fetch_assoc()) {
 }
 $stmt_image->close();
 
+// --- Fetch weather data and calculate environmental flare risk ---
+$weather_city = null;
+$weather_temperature = null;
+$weather_humidity = null;
+$environmental_flare_risk = "Good";
+$environmental_flare_color = "#4caf50"; // green
+$environmental_flare_message = "Environmental conditions are favorable.";
+
+// Fetch user's preferred city
+$stmt_pref_city = $conn->prepare("SELECT city FROM weather_preferences WHERE user_id = ?");
+$stmt_pref_city->bind_param("i", $user_id);
+$stmt_pref_city->execute();
+$result_pref_city = $stmt_pref_city->get_result();
+if ($row = $result_pref_city->fetch_assoc()) {
+    $weather_city = htmlspecialchars($row['city']);
+    // Fetch latest weather data for this city
+    $stmt_weather = $conn->prepare("SELECT temperature, humidity FROM weather_history WHERE city = ? ORDER BY date_checked DESC LIMIT 1");
+    $stmt_weather->bind_param("s", $weather_city);
+    $stmt_weather->execute();
+    $result_weather = $stmt_weather->get_result();
+    if ($weather_row = $result_weather->fetch_assoc()) {
+        $weather_temperature = $weather_row['temperature'];
+        $weather_humidity = $weather_row['humidity'];
+
+        // Simple rule-based environmental risk calculation
+        if ($weather_humidity < 30 || $weather_temperature > 30 || $weather_temperature < 5) { // Example thresholds
+            $environmental_flare_risk = "Elevated";
+            $environmental_flare_color = "#ff9800"; // orange
+            $environmental_flare_message = "Current weather may increase flare risk.";
+        }
+    }
+    $stmt_weather->close();
+}
+$stmt_pref_city->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -131,7 +165,7 @@ $stmt_image->close();
             <div class="nav-auth">
                 <a id="signout-link" class="signout-btn">Sign Out</a>
             </div>
-        </div>
+</div>
     </nav>
 
     <div class="main">
@@ -169,5 +203,11 @@ $stmt_image->close();
                     <h1 style="color: #2196f3; font-size: 24px; margin-top: 20px;">No Images</h1>
                     <p>Upload a photo to track progress.</p>
                 <?php endif; ?>
+            </div>
+
+            <div class="card">
+                <h2>Environmental Risk</h2>
+                <h1 style="color: <?php echo $environmental_flare_color; ?>;"><?php echo $environmental_flare_risk; ?></h1>
+                <p><?php echo $environmental_flare_message; ?></p>
             </div>
         </div>

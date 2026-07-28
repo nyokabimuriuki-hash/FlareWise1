@@ -20,3 +20,5 @@ Import `database/flarewise.sql`, configure credentials in `config/database.php`,
 XAMPP serves `C:\xampp\htdocs\FlareWise`, while this project is edited in OneDrive. The current project has been copied into XAMPP's folder, so browse to `http://localhost/FlareWise/` after starting **Apache** and **MySQL** in the XAMPP Control Panel. Do not use VS Code Live Server for this project: it does not execute PHP or connect to MySQL.
 
 This app uses Firebase authentication with a local MySQL user record. Import `database/flarewise.sql` into a fresh database before creating accounts. The nullable `password` field is retained only for compatibility with older data; current authentication uses `firebase_uid`. If you already have the older schema without `firebase_uid`, run `database/migrate-firebase.sql` once instead.
+
+Another commit in the works 
