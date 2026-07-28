@@ -1,0 +1,85 @@
+[Tue Jul 28 18:34:30 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Tue Jul 28 18:35:22 2026] [::1]:45806 Accepted
+[Tue Jul 28 18:35:22 2026] [::1]:45806 [200]: GET /pages/login.html
+[Tue Jul 28 18:35:22 2026] [::1]:45806 Closing
+[Tue Jul 28 18:35:22 2026] [::1]:45814 Accepted
+[Tue Jul 28 18:35:22 2026] [::1]:42512 Accepted
+[Tue Jul 28 18:35:22 2026] [::1]:45814 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:22 2026] [::1]:42512 [200]: GET /assets/js/firebase-config.js
+[Tue Jul 28 18:35:22 2026] [::1]:45814 Closing
+[Tue Jul 28 18:35:22 2026] [::1]:42512 Closing
+[Tue Jul 28 18:35:23 2026] [::1]:42528 Accepted
+[Tue Jul 28 18:35:23 2026] [::1]:42528 [200]: POST /api/login_session.php
+[Tue Jul 28 18:35:23 2026] [::1]:42528 Closing
+[Tue Jul 28 18:35:23 2026] [::1]:42536 Accepted
+[Tue Jul 28 18:35:23 2026] [::1]:42536 [200]: GET /pages/dashboard.php
+[Tue Jul 28 18:35:23 2026] [::1]:42536 Closing
+[Tue Jul 28 18:35:23 2026] [::1]:42540 Accepted
+[Tue Jul 28 18:35:23 2026] [::1]:42540 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:23 2026] [::1]:42540 Closing
+[Tue Jul 28 18:35:25 2026] [::1]:42548 Accepted
+[Tue Jul 28 18:35:25 2026] [::1]:42548 [200]: GET /pages/symptoms.php
+[Tue Jul 28 18:35:25 2026] [::1]:42548 Closing
+[Tue Jul 28 18:35:25 2026] [::1]:42558 Accepted
+[Tue Jul 28 18:35:25 2026] [::1]:42562 Accepted
+[Tue Jul 28 18:35:25 2026] [::1]:42558 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:25 2026] [::1]:42562 [200]: GET /assets/js/firebase-config.js
+[Tue Jul 28 18:35:25 2026] [::1]:42558 Closing
+[Tue Jul 28 18:35:25 2026] [::1]:42562 Closing
+[Tue Jul 28 18:35:25 2026] [::1]:42564 Accepted
+[Tue Jul 28 18:35:25 2026] [::1]:42564 [200]: GET /pages/login.html
+[Tue Jul 28 18:35:25 2026] [::1]:42564 Closing
+[Tue Jul 28 18:35:25 2026] [::1]:42576 Accepted
+[Tue Jul 28 18:35:25 2026] [::1]:42588 Accepted
+[Tue Jul 28 18:35:25 2026] [::1]:42576 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:25 2026] [::1]:42588 [200]: GET /assets/js/firebase-config.js
+[Tue Jul 28 18:35:25 2026] [::1]:42576 Closing
+[Tue Jul 28 18:35:25 2026] [::1]:42588 Closing
+[Tue Jul 28 18:35:26 2026] [::1]:42598 Accepted
+[Tue Jul 28 18:35:26 2026] [::1]:42598 [200]: GET /pages/medication.php
+[Tue Jul 28 18:35:26 2026] [::1]:42598 Closing
+[Tue Jul 28 18:35:26 2026] [::1]:42602 Accepted
+[Tue Jul 28 18:35:26 2026] [::1]:42602 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:26 2026] [::1]:42602 Closing
+[Tue Jul 28 18:35:26 2026] [::1]:42616 Accepted
+[Tue Jul 28 18:35:26 2026] [::1]:42618 Accepted
+[Tue Jul 28 18:35:26 2026] [::1]:42616 [200]: GET /assets/js/reminders.js
+[Tue Jul 28 18:35:26 2026] [::1]:42618 [200]: GET /assets/js/firebase-config.js
+[Tue Jul 28 18:35:26 2026] [::1]:42616 Closing
+[Tue Jul 28 18:35:26 2026] [::1]:42618 Closing
+[Tue Jul 28 18:35:27 2026] [::1]:42622 Accepted
+[Tue Jul 28 18:35:27 2026] [::1]:42622 [200]: GET /pages/login.html
+[Tue Jul 28 18:35:27 2026] [::1]:42622 Closing
+[Tue Jul 28 18:35:27 2026] [::1]:42632 Accepted
+[Tue Jul 28 18:35:27 2026] [::1]:42636 Accepted
+[Tue Jul 28 18:35:27 2026] [::1]:42632 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:27 2026] [::1]:42636 [200]: GET /assets/js/firebase-config.js
+[Tue Jul 28 18:35:27 2026] [::1]:42632 Closing
+[Tue Jul 28 18:35:27 2026] [::1]:42636 Closing
+[Tue Jul 28 18:35:28 2026] [::1]:42648 Accepted
+[Tue Jul 28 18:35:28 2026] [::1]:42648 [200]: GET /pages/ingredients_checker.php
+[Tue Jul 28 18:35:28 2026] [::1]:42648 Closing
+[Tue Jul 28 18:35:28 2026] [::1]:42660 Accepted
+[Tue Jul 28 18:35:28 2026] [::1]:42668 Accepted
+[Tue Jul 28 18:35:28 2026] [::1]:42660 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:28 2026] [::1]:42668 [200]: GET /assets/js/firebase-config.js
+[Tue Jul 28 18:35:28 2026] [::1]:42660 Closing
+[Tue Jul 28 18:35:28 2026] [::1]:42668 Closing
+[Tue Jul 28 18:35:28 2026] [::1]:42670 Accepted
+[Tue Jul 28 18:35:28 2026] [::1]:42670 [200]: GET /pages/login.html
+[Tue Jul 28 18:35:28 2026] [::1]:42670 Closing
+[Tue Jul 28 18:35:28 2026] [::1]:42678 Accepted
+[Tue Jul 28 18:35:28 2026] [::1]:42682 Accepted
+[Tue Jul 28 18:35:28 2026] [::1]:42678 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:28 2026] [::1]:42682 [200]: GET /assets/js/firebase-config.js
+[Tue Jul 28 18:35:28 2026] [::1]:42678 Closing
+[Tue Jul 28 18:35:28 2026] [::1]:42682 Closing
+[Tue Jul 28 18:35:30 2026] [::1]:42692 Accepted
+[Tue Jul 28 18:35:30 2026] [::1]:42692 [302]: GET /pages/admin_dashboard.php
+[Tue Jul 28 18:35:30 2026] [::1]:42692 Closing
+[Tue Jul 28 18:35:30 2026] [::1]:42696 Accepted
+[Tue Jul 28 18:35:30 2026] [::1]:42696 [200]: GET /pages/dashboard.php
+[Tue Jul 28 18:35:30 2026] [::1]:42696 Closing
+[Tue Jul 28 18:35:30 2026] [::1]:42702 Accepted
+[Tue Jul 28 18:35:30 2026] [::1]:42702 [200]: GET /assets/css/app.css
+[Tue Jul 28 18:35:30 2026] [::1]:42702 Closing

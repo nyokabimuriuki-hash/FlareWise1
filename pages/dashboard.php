@@ -76,6 +76,65 @@ $reminder_result = $stmt_reminders->get_result();
 while ($row = $reminder_result->fetch_assoc()) { $reminders[] = ['id' => (int)$row['medication_id'], 'name' => $row['medicine_name'], 'dosage' => $row['dosage'], 'time' => $row['reminder_time']]; }
 $stmt_reminders->close();
 
+if (isset($_POST['save_city'])) {
+    $city = trim($_POST['city']);
+    if (!empty($city)) {
+        $stmt_city = $conn->prepare("INSERT INTO weather_preferences (user_id, city) VALUES (?, ?) ON DUPLICATE KEY UPDATE city = VALUES(city)");
+        $stmt_city->bind_param("is", $user_id, $city);
+        $stmt_city->execute();
+        $stmt_city->close();
+    }
+}
+
+// Fetch user's city
+$user_city = null;
+$stmt_get_city = $conn->prepare("SELECT city FROM weather_preferences WHERE user_id = ?");
+$stmt_get_city->bind_param("i", $user_id);
+$stmt_get_city->execute();
+$result_city = $stmt_get_city->get_result();
+if ($row = $result_city->fetch_assoc()) {
+    $user_city = $row['city'];
+}
+$stmt_get_city->close();
+
+$weatherAlert = null;
+if ($user_city) {
+    // Open-Meteo API doesn't require an API key and accepts coordinates. We will use geocoding API to get coords first.
+    // Geocoding API: https://geocoding-api.open-meteo.com/v1/search?name=CITY
+    $geo_url = "https://geocoding-api.open-meteo.com/v1/search?name=" . urlencode($user_city) . "&count=1&language=en&format=json";
+    $geo_response = @file_get_contents($geo_url);
+    if ($geo_response) {
+        $geo_data = json_decode($geo_response, true);
+        if (isset($geo_data['results'][0])) {
+            $lat = $geo_data['results'][0]['latitude'];
+            $lon = $geo_data['results'][0]['longitude'];
+
+            // Weather API: https://api.open-meteo.com/v1/forecast?latitude=LAT&longitude=LON&current_weather=true&hourly=relativehumidity_2m
+            $weather_url = "https://api.open-meteo.com/v1/forecast?latitude={$lat}&longitude={$lon}&current=temperature_2m,relative_humidity_2m";
+            $weather_response = @file_get_contents($weather_url);
+            if ($weather_response) {
+                $weather_data = json_decode($weather_response, true);
+                if (isset($weather_data['current'])) {
+                    $temp = $weather_data['current']['temperature_2m'];
+                    $humidity = $weather_data['current']['relative_humidity_2m'];
+
+                    $weatherRisk = ($temp > 30 && $humidity < 40) ? 'High (Dryness)' : 'Low';
+
+                    if ($weatherRisk === 'High (Dryness)') {
+                        $weatherAlert = "Alert: High temperature ({$temp}°C) and low humidity ({$humidity}%) in {$user_city} may increase dryness. Remember to moisturize!";
+                    } else {
+                        $weatherAlert = "Current conditions in {$user_city}: {$temp}°C, {$humidity}% humidity. Flare risk is Low.";
+                    }
+                }
+            }
+        }
+    }
+
+    if (!$weatherAlert) {
+        $weatherAlert = "Could not fetch weather data for {$user_city} at this time.";
+    }
+}
+
 // Fetch latest image for Skin Health card
 $latest_image = null;
 // Assuming `image_id` is the auto-incrementing primary key for the skin_images table
@@ -122,6 +181,8 @@ $stmt_image->close();
             <div class="nav-brand">FlareWise</div>
             <div class="nav-links">
                 <a href="dashboard.php" class="active">Dashboard</a>
+                <a href="ingredients_checker.php">Ingredients</a>
+                <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') echo '<a href="admin_dashboard.php">Admin</a>'; ?>
                 <a href="symptoms.php">Symptoms</a>
                 <a href="medication.php">Medication</a>
                 <a href="upload.php">Images</a>
@@ -136,6 +197,19 @@ $stmt_image->close();
 
     <div class="main">
         <h1 id="welcome">Welcome, <?php echo $userName; ?></h1>
+
+        <div class="card" style="margin-bottom: 20px;">
+            <h2>Weather & Environmental Alerts</h2>
+            <?php if ($weatherAlert): ?>
+                <p class="notice <?php echo strpos($weatherAlert, 'Alert:') !== false ? 'warning' : ''; ?>">
+                    <?php echo htmlspecialchars($weatherAlert); ?>
+                </p>
+            <?php endif; ?>
+            <form method="POST" style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                <input type="text" name="city" placeholder="Enter your city" value="<?php echo htmlspecialchars($user_city ?? ''); ?>" required style="max-width: 300px; margin-top: 0;">
+                <input type="submit" name="save_city" value="Set City" style="margin-top: 0; width: auto;">
+            </form>
+        </div>
 
         <div class="cards">
             <div class="card">

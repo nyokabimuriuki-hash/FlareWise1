@@ -33,6 +33,7 @@ if ($stmt->execute()) {
     $_SESSION['user_id'] = $user_id;
     $_SESSION['user_fullname'] = $fullname;
     $_SESSION['user_email'] = $email;
+    $_SESSION['user_role'] = 'user';
 
     // Send a success response
     echo json_encode(['status' => 'success', 'message' => 'User created and session started.']);

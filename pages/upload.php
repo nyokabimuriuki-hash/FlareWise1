@@ -47,6 +47,8 @@ if (isset($_POST['upload'])) {
 			<div class="nav-brand">FlareWise</div>
 			<div class="nav-links">
 				<a href="dashboard.php">Dashboard</a>
+                <a href="ingredients_checker.php">Ingredients</a>
+                <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') echo '<a href="admin_dashboard.php">Admin</a>'; ?>
 				<a href="symptoms.php">Symptoms</a>
 				<a href="medication.php">Medication</a>
 				<a href="upload.php" class="active">Images</a>
