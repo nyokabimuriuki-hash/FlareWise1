@@ -25,6 +25,13 @@ if (isset($_POST['save'])) {
 	$stmt->close();
 }
 
+if (isset($_POST['delete_symptom_id'])) {
+	$stmt = $conn->prepare('DELETE FROM symptoms WHERE symptom_id = ? AND user_id = ?');
+	$stmt->bind_param('ii', $_POST['delete_symptom_id'], $user_id);
+	$stmt->execute();
+	$stmt->close();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -42,6 +49,8 @@ if (isset($_POST['save'])) {
 			<div class="nav-brand">FlareWise</div>
 			<div class="nav-links">
 				<a href="dashboard.php">Dashboard</a>
+                <a href="ingredients_checker.php">Ingredients</a>
+                <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') echo '<a href="admin_dashboard.php">Admin</a>'; ?>
 				<a href="symptoms.php" class="active">Symptoms</a>
 				<a href="medication.php">Medication</a>
 				<a href="upload.php">Images</a>
@@ -96,12 +105,13 @@ if (isset($_POST['save'])) {
 						<th>Dryness</th>
 						<th>Irritation</th>
 						<th>Notes</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php
 					// Use prepared statements for selecting data
-					$stmt = $conn->prepare("SELECT symptom_date, itching, redness, dryness, irritation, notes FROM symptoms WHERE user_id = ? ORDER BY symptom_date DESC LIMIT 20");
+					$stmt = $conn->prepare("SELECT symptom_id, symptom_date, itching, redness, dryness, irritation, notes FROM symptoms WHERE user_id = ? ORDER BY symptom_date DESC LIMIT 20");
 					$stmt->bind_param("i", $user_id);
 					$stmt->execute();
 					$result = $stmt->get_result();
@@ -115,6 +125,12 @@ if (isset($_POST['save'])) {
 							<td><strong>".htmlspecialchars($row['dryness'])."</strong>/10</td>
 							<td><strong>".htmlspecialchars($row['irritation'])."</strong>/10</td>
 							<td>".htmlspecialchars(strlen($row['notes']) > 30 ? substr($row['notes'], 0, 30).'...' : $row['notes'])."</td>
+							<td>
+								<form method='POST' style='display:inline;'>
+									<input type='hidden' name='delete_symptom_id' value='".htmlspecialchars($row['symptom_id'])."'>
+									<button type='submit' class='btn-danger'>Delete</button>
+								</form>
+							</td>
 						</tr>";
 					}
 					?>

@@ -161,3 +161,6 @@ footer { padding: 26px; color:var(--muted); text-align:center; }
   .hero { grid-template-columns:1fr; padding-top:50px; } .hero-visual { max-width:520px; width:100%; margin:auto; }
 }
 @media (max-width: 560px) { .main { padding:18px; border-radius:22px; } .hero-features { grid-template-columns:1fr; } .illustration-bg { height:310px; } .nav-auth { margin-left:auto; } }
+
+.btn-danger { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: background 0.2s ease; }
+.btn-danger:hover { background: #ff1a1a; }

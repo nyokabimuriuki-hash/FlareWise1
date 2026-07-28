@@ -34,6 +34,13 @@ if (isset($_POST['save'])) {
 	}
 }
 
+if (isset($_POST['delete_medication_id'])) {
+	$stmt = $conn->prepare('DELETE FROM medications WHERE medication_id = ? AND user_id = ?');
+	$stmt->bind_param('ii', $_POST['delete_medication_id'], $user_id);
+	$stmt->execute();
+	$stmt->close();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -51,6 +58,8 @@ if (isset($_POST['save'])) {
 			<div class="nav-brand">FlareWise</div>
 			<div class="nav-links">
 				<a href="dashboard.php">Dashboard</a>
+                <a href="ingredients_checker.php">Ingredients</a>
+                <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') echo '<a href="admin_dashboard.php">Admin</a>'; ?>
 				<a href="symptoms.php">Symptoms</a>
 				<a href="medication.php" class="active">Medication</a>
 				<a href="upload.php">Images</a>
@@ -103,6 +112,7 @@ if (isset($_POST['save'])) {
 						<th>Dosage</th>
 						<th>Type</th>
 						<th>Reminder Time</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -123,6 +133,12 @@ if (isset($_POST['save'])) {
 							<td>".htmlspecialchars($row['dosage'])."</td>
 							<td>".htmlspecialchars($row['reminder_type'] ?? 'Medication')."</td>
 							<td>".htmlspecialchars(date("g:i A", strtotime($row['reminder_time'])))."</td>
+							<td>
+								<form method='POST' style='display:inline;'>
+									<input type='hidden' name='delete_medication_id' value='".htmlspecialchars($row['medication_id'])."'>
+									<button type='submit' class='btn-danger'>Delete</button>
+								</form>
+							</td>
 						</tr>";
 					}
 					?>

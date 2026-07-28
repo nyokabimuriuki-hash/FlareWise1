@@ -20,7 +20,7 @@ if ($firebaseUid === '' || $email === '') {
 }
 
 // First, look for an account already linked to this Firebase user.
-$stmt = $conn->prepare('SELECT id, fullname, email FROM users WHERE firebase_uid = ? LIMIT 1');
+$stmt = $conn->prepare('SELECT id, fullname, email, role FROM users WHERE firebase_uid = ? LIMIT 1');
 $stmt->bind_param('s', $firebaseUid);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
@@ -28,7 +28,7 @@ $stmt->close();
 
 if (!$user) {
     // Link a legacy local account with the same email, if one exists.
-    $stmt = $conn->prepare('SELECT id, fullname, email FROM users WHERE email = ? LIMIT 1');
+    $stmt = $conn->prepare('SELECT id, fullname, email, role FROM users WHERE email = ? LIMIT 1');
     $stmt->bind_param('s', $email);
     $stmt->execute();
     $user = $stmt->get_result()->fetch_assoc();
@@ -58,5 +58,6 @@ if (!$user) {
 $_SESSION['user_id'] = (int) $user['id'];
 $_SESSION['user_fullname'] = $user['fullname'];
 $_SESSION['user_email'] = $user['email'];
+$_SESSION['user_role'] = $user['role'] ?? 'user';
 
 echo json_encode(['status' => 'success', 'message' => 'Session created successfully.']);

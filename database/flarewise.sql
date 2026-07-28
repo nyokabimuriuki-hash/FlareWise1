@@ -10,7 +10,8 @@ CREATE TABLE users (
     -- Kept nullable for compatibility with the earlier password-based version.
     -- Current authentication uses firebase_uid instead.
     password VARCHAR(255) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    role ENUM('user', 'admin') DEFAULT 'user'
 );
 
 CREATE TABLE symptoms (
