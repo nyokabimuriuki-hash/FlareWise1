@@ -195,23 +195,7 @@
 
 		<div id="error-container" class="error-message"></div>
 
-		<form id="login-form">
-			<input id="login-email" 
-				type="email" 
-				name="email" 
-				placeholder="Email Address" 
-				required
-				autocomplete="email">
-      
-			<input id="login-password" 
-				type="password" 
-				name="password" 
-				placeholder="Password" 
-				required
-				autocomplete="current-password">
-      
-			<input type="submit" value="Sign In">
-		</form>
+		<div id="firebaseui-auth-container"></div>
     
 		<p>
 			Don't have an account? 
@@ -222,6 +206,8 @@
 	<!-- Firebase SDKs (compat) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+	<link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
 	<script src="../assets/js/firebase-config.js"></script>
 
 	<script>
@@ -237,8 +223,8 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					firebase_uid: firebaseUser.uid,
-					email: firebaseUser.email,
-					fullname: firebaseUser.displayName || firebaseUser.email
+					email: firebaseUser.email || (firebaseUser.phoneNumber + '@phone.app'), // Fallback email for phone auth users
+					fullname: firebaseUser.displayName || firebaseUser.phoneNumber || firebaseUser.email
 				})
 			});
 
@@ -265,43 +251,45 @@
 			}
 		});
 
-		document.getElementById('login-form').addEventListener('submit', async (e) => {
-			e.preventDefault();
-			const errorContainer = document.getElementById('error-container');
-			errorContainer.style.display = 'none'; // Hide previous errors
+		// Initialize the FirebaseUI Widget using Firebase.
+		var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
-			const email = document.getElementById('login-email').value.trim();
-			const password = document.getElementById('login-password').value;
-			try {
-				isCreatingSession = true;
-				// 1. Sign in with Firebase
-				const userCred = await auth.signInWithEmailAndPassword(email, password);
-				const firebaseUser = userCred.user;
-
-				// 2. Create the server-side session required by dashboard.php.
-				await createPhpSession(firebaseUser);
-
-				// 3. Redirect to the dashboard
-				window.location.href = 'dashboard.php';
-			} catch (err) {
-				isCreatingSession = false;
-				alert(err.message);
-				let friendlyMessage = 'An unexpected error occurred. Please try again.';
-				switch (err.code) {
-					case 'auth/user-not-found':
-						friendlyMessage = 'No account found with that email address. Please register first.';
-						break;
-					case 'auth/wrong-password':
-						friendlyMessage = 'Incorrect password. Please try again.';
-						break;
-					case 'auth/invalid-email':
-						friendlyMessage = 'The email address is not valid. Please check it and try again.';
-						break;
+		var uiConfig = {
+			callbacks: {
+				signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+					isCreatingSession = true;
+					const firebaseUser = authResult.user;
+					createPhpSession(firebaseUser)
+						.then(() => {
+							window.location.href = 'dashboard.php';
+						})
+						.catch(err => {
+							isCreatingSession = false;
+							const errorContainer = document.getElementById('error-container');
+							errorContainer.textContent = err.message;
+							errorContainer.style.display = 'block';
+							auth.signOut();
+						});
+					// Return false to prevent FirebaseUI from redirecting automatically
+					return false;
+				},
+				uiShown: function() {
+					// The widget is rendered.
 				}
-				errorContainer.textContent = friendlyMessage;
-				errorContainer.style.display = 'block';
-			}
-		});
+			},
+			signInFlow: 'popup',
+			signInOptions: [
+				// Leave the lines as is for the providers you want to offer your users.
+				firebase.auth.EmailAuthProvider.PROVIDER_ID,
+				firebase.auth.PhoneAuthProvider.PROVIDER_ID
+			],
+			tosUrl: '#',
+			privacyPolicyUrl: '#'
+		};
+
+		// The start method will wait until the DOM is loaded.
+		ui.start('#firebaseui-auth-container', uiConfig);
+
 	</script>
 </body>
 </html>

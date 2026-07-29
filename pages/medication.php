@@ -21,7 +21,7 @@ if (isset($_POST['save'])) {
 	$time=$_POST['time'];
 	$type=($_POST['reminder_type'] ?? 'Medication') === 'Skincare' ? 'Skincare' : 'Medication';
 
-	if ($name !== '' && $dosage !== '' && preg_match('/^([01]\\d|2[0-3]):[0-5]\\d$/', $time)) {
+	if ($name !== '' && $dosage !== '') {
 		if ($type_column) {
 			$stmt = $conn->prepare("INSERT INTO medications(user_id, medicine_name, dosage, reminder_type, reminder_time) VALUES (?, ?, ?, ?, ?)");
 			$stmt->bind_param("issss", $user_id, $name, $dosage, $type, $time);
@@ -93,7 +93,7 @@ if (isset($_POST['delete_medication_id'])) {
 				</select>
         
 				<label>Reminder Time</label>
-				<input type="time" name="time" required>
+				<input type="datetime-local" name="time" required>
         
 				<input type="submit" name="save" value="Save Reminder">
 				<button type="button" class="button-secondary" onclick="enableFlarewiseNotifications()">Enable browser notifications</button>
@@ -132,7 +132,7 @@ if (isset($_POST['delete_medication_id'])) {
 							<td><strong>".htmlspecialchars($row['medicine_name'])."</strong></td>
 							<td>".htmlspecialchars($row['dosage'])."</td>
 							<td>".htmlspecialchars($row['reminder_type'] ?? 'Medication')."</td>
-							<td>".htmlspecialchars(date("g:i A", strtotime($row['reminder_time'])))."</td>
+							<td>".htmlspecialchars(date("M d, Y g:i A", strtotime($row['reminder_time'])))."</td>
 							<td>
 								<form method='POST' style='display:inline;'>
 									<input type='hidden' name='delete_medication_id' value='".htmlspecialchars($row['medication_id'])."'>

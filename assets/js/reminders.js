@@ -28,10 +28,15 @@
     }
   }
   function check() {
-    const now = new Date(); const time = now.toTimeString().slice(0, 5);
+    const now = Date.now();
     reminders.forEach(r => {
-      const id = String(r.id) + '-' + time;
-      if (r.time && r.time.slice(0, 5) === time && !shown().includes(id)) { remember(id); notify(r); }
+      if (r.time) {
+        const targetTime = new Date(r.time).getTime();
+        if (targetTime <= now && !shown().includes(String(r.id))) {
+          remember(String(r.id));
+          notify(r);
+        }
+      }
     });
   }
   window.enableFlarewiseNotifications = function () {
