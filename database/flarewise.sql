@@ -32,7 +32,7 @@ CREATE TABLE medications (
     medicine_name VARCHAR(100),
     dosage VARCHAR(50),
     reminder_type ENUM('Medication', 'Skincare') NOT NULL DEFAULT 'Medication',
-    reminder_time TIME,
+    reminder_time DATETIME,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 

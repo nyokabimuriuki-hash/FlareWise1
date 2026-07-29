@@ -1,10 +1,55 @@
-[Wed Jul 29 07:52:32 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
-[Wed Jul 29 07:52:55 2026] [::1]:46894 Accepted
-[Wed Jul 29 07:52:55 2026] [::1]:46894 [200]: GET /pages/about.php
-[Wed Jul 29 07:52:55 2026] [::1]:46894 Closing
-[Wed Jul 29 07:52:55 2026] [::1]:46910 Accepted
-[Wed Jul 29 07:52:55 2026] [::1]:46914 Accepted
-[Wed Jul 29 07:52:55 2026] [::1]:46910 [200]: GET /assets/css/app.css
-[Wed Jul 29 07:52:55 2026] [::1]:46914 [200]: GET /assets/js/firebase-config.js
-[Wed Jul 29 07:52:55 2026] [::1]:46910 Closing
-[Wed Jul 29 07:52:55 2026] [::1]:46914 Closing
+[Wed Jul 29 10:04:44 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Wed Jul 29 10:05:10 2026] [::1]:43798 Accepted
+[Wed Jul 29 10:05:10 2026] [::1]:43798 [200]: GET /pages/login.html
+[Wed Jul 29 10:05:10 2026] [::1]:43798 Closing
+[Wed Jul 29 10:05:10 2026] [::1]:43808 Accepted
+[Wed Jul 29 10:05:10 2026] [::1]:43824 Accepted
+[Wed Jul 29 10:05:10 2026] [::1]:43808 [200]: GET /assets/css/app.css
+[Wed Jul 29 10:05:10 2026] [::1]:43824 [200]: GET /assets/js/firebase-config.js
+[Wed Jul 29 10:05:10 2026] [::1]:43808 Closing
+[Wed Jul 29 10:05:10 2026] [::1]:43824 Closing
+[Wed Jul 29 10:05:13 2026] [::1]:43828 Accepted
+[Wed Jul 29 10:05:13 2026] [::1]:43828 [200]: POST /api/login_session.php
+[Wed Jul 29 10:05:13 2026] [::1]:43828 Closing
+[Wed Jul 29 10:05:13 2026] [::1]:43836 Accepted
+[Wed Jul 29 10:05:13 2026] [::1]:43836 [200]: GET /pages/medication.php
+[Wed Jul 29 10:05:13 2026] [::1]:43836 Closing
+[Wed Jul 29 10:05:13 2026] [::1]:43840 Accepted
+[Wed Jul 29 10:05:13 2026] [::1]:43842 Accepted
+[Wed Jul 29 10:05:13 2026] [::1]:43856 Accepted
+[Wed Jul 29 10:05:13 2026] [::1]:43840 [200]: GET /assets/css/app.css
+[Wed Jul 29 10:05:13 2026] [::1]:43842 [200]: GET /assets/js/reminders.js
+[Wed Jul 29 10:05:13 2026] [::1]:43856 [200]: GET /assets/js/firebase-config.js
+[Wed Jul 29 10:05:13 2026] [::1]:43840 Closing
+[Wed Jul 29 10:05:13 2026] [::1]:43842 Closing
+[Wed Jul 29 10:05:13 2026] [::1]:43856 Closing
+[Wed Jul 29 10:05:13 2026] [::1]:43872 Accepted
+[Wed Jul 29 10:05:13 2026] [::1]:43872 [200]: GET /pages/login.html
+[Wed Jul 29 10:05:13 2026] [::1]:43872 Closing
+[Wed Jul 29 10:05:13 2026] [::1]:43886 Accepted
+[Wed Jul 29 10:05:13 2026] [::1]:43886 [200]: GET /assets/css/app.css
+[Wed Jul 29 10:05:13 2026] [::1]:43886 Closing
+[Wed Jul 29 10:05:13 2026] [::1]:43894 Accepted
+[Wed Jul 29 10:05:13 2026] [::1]:43894 [200]: GET /assets/js/firebase-config.js
+[Wed Jul 29 10:05:13 2026] [::1]:43894 Closing
+[Wed Jul 29 10:05:16 2026] [::1]:43898 Accepted
+[Wed Jul 29 10:05:16 2026] [::1]:43898 [200]: GET /pages/medication.php
+[Wed Jul 29 10:05:16 2026] [::1]:43898 Closing
+[Wed Jul 29 10:05:16 2026] [::1]:43900 Accepted
+[Wed Jul 29 10:05:16 2026] [::1]:43906 Accepted
+[Wed Jul 29 10:05:16 2026] [::1]:43918 Accepted
+[Wed Jul 29 10:05:16 2026] [::1]:43900 [200]: GET /assets/css/app.css
+[Wed Jul 29 10:05:16 2026] [::1]:43900 Closing
+[Wed Jul 29 10:05:16 2026] [::1]:43906 [200]: GET /assets/js/firebase-config.js
+[Wed Jul 29 10:05:16 2026] [::1]:43918 [200]: GET /assets/js/reminders.js
+[Wed Jul 29 10:05:16 2026] [::1]:43906 Closing
+[Wed Jul 29 10:05:16 2026] [::1]:43918 Closing
+[Wed Jul 29 10:05:16 2026] [::1]:43922 Accepted
+[Wed Jul 29 10:05:16 2026] [::1]:43922 [200]: GET /pages/login.html
+[Wed Jul 29 10:05:16 2026] [::1]:43922 Closing
+[Wed Jul 29 10:05:16 2026] [::1]:43938 Accepted
+[Wed Jul 29 10:05:16 2026] [::1]:43938 [200]: GET /assets/css/app.css
+[Wed Jul 29 10:05:16 2026] [::1]:43938 Closing
+[Wed Jul 29 10:05:16 2026] [::1]:43946 Accepted
+[Wed Jul 29 10:05:16 2026] [::1]:43946 [200]: GET /assets/js/firebase-config.js
+[Wed Jul 29 10:05:16 2026] [::1]:43946 Closing
