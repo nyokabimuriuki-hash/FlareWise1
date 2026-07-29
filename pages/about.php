@@ -27,7 +27,7 @@ session_start();
 			</div>
 			<div class="nav-auth">
 				<?php if(isset($_SESSION['user_id'])): ?>
-					<a id="signout-link" class="signout-btn">Sign Out</a>
+					<a id="signout-link" class="signout-btn" href="javascript:void(0);">Sign Out</a>
 				<?php else: ?>
 					<a href="login.html" class="signin-btn">Sign In</a>
 				<?php endif; ?>

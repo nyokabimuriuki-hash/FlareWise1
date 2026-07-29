@@ -80,7 +80,7 @@ nav {
 }
 .nav-links a:hover, .nav-links a.active { color: var(--blue-deep); background: rgba(182, 239, 255, .56); }
 .signin-btn { border: 1px solid rgba(79, 183, 234, .45); }
-.signup-btn, .signout-btn { color: #fff !important; background: linear-gradient(135deg, #3ac4ff, #2477df); box-shadow: 0 8px 20px rgba(38, 149, 226, .28); }
+.signup-btn, .signout-btn { cursor: pointer; color: #fff !important; background: linear-gradient(135deg, #3ac4ff, #2477df); box-shadow: 0 8px 20px rgba(38, 149, 226, .28); }
 
 /* --- Shared application layout -------------------------------------------- */
 .main {

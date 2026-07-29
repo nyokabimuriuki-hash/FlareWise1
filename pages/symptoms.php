@@ -58,7 +58,7 @@ if (isset($_POST['delete_symptom_id'])) {
 				<a href="about.php">About Us</a>
 			</div>
 			<div class="nav-auth">
-				<a id="signout-link" class="signout-btn">Sign Out</a>
+				<a id="signout-link" class="signout-btn" href="javascript:void(0);">Sign Out</a>
 			</div>
 		</div>
 	</nav>
